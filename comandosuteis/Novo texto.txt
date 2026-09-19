@@ -1,0 +1,465 @@
+# Atualizando com seu usuário do GitHub
+
+Seu usuário é **`maxbit1980`**. Vou substituir em todos os arquivos.
+
+---
+
+## 1. `_config.yml` atualizado
+
+```bash
+nano ~/Maxblog/_config.yml
+```
+
+```yaml
+title: Maxblog
+tagline: "Código, projetos e aprendizado contínuo"
+description: >-
+  Portfólio técnico e blog pessoal de Cesar. Aqui compartilho projetos,
+  soluções de código, estudos em desenvolvimento de software e anotações
+  sobre tecnologia.
+author:
+  name: Cesar
+  email: seu@email.com
+
+baseurl: ""
+url: ""
+
+github_username: maxbit1980
+linkedin_username: seu-usuario-linkedin
+twitter_username: seu-usuario-twitter
+
+minima:
+  skin: dark
+  date_format: "%d/%m/%Y"
+  social:
+    - title: GitHub
+      icon: github
+      url: https://github.com/maxbit1980
+    - title: LinkedIn
+      icon: linkedin
+      url: https://linkedin.com/in/seu-usuario-linkedin
+    - title: E-mail
+      icon: envelope
+      url: mailto:seu@email.com
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: true
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+sass:
+  quiet_deps: true
+  silence_deprecations:
+    - import
+    - global-builtin
+    - color-functions
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - .github/
+  - README.md
+```
+
+---
+
+## 2. `index.md` atualizado
+
+```bash
+nano ~/Maxblog/index.md
+```
+
+```markdown
+---
+layout: home
+title: Início
+---
+
+# 👋 Olá, eu sou o Cesar
+
+Desenvolvedor apaixonado por **resolver problemas com código**, construir
+projetos úteis e compartilhar o que aprendo no caminho.
+
+Neste blog você vai encontrar:
+
+- 🚀 **Projetos pessoais** — experimentos, ferramentas e aplicações completas
+- 🧠 **Anotações técnicas** — tutoriais, soluções de bugs e boas práticas
+- 📚 **Estudos** — algoritmos, estruturas de dados, novas linguagens e frameworks
+- 🛠️ **DevOps & Automação** — scripts, CI/CD e produtividade
+
+---
+
+## 🗂️ Projetos em destaque
+
+> 💡 Veja todos os repositórios em [github.com/maxbit1980](https://github.com/maxbit1980)
+
+| Projeto | Descrição | Stack |
+|---|---|---|
+| **[Projeto 1](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
+| **[Projeto 2](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
+| **[Projeto 3](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
+
+---
+
+## 📬 Contato
+
+- **GitHub:** [@maxbit1980](https://github.com/maxbit1980)
+- **LinkedIn:** [seu-usuario-linkedin](https://linkedin.com/in/seu-usuario-linkedin)
+- **E-mail:** [seu@email.com](mailto:seu@email.com)
+
+---
+
+## 📝 Posts recentes
+```
+
+---
+
+## 3. `about.md` atualizado
+
+```bash
+nano ~/Maxblog/about.md
+```
+
+```markdown
+---
+layout: page
+title: Sobre
+permalink: /sobre/
+---
+
+## 👨‍💻 Quem sou
+
+Meu nome é **Cesar**, sou desenvolvedor de software e este é o meu espaço
+para documentar projetos, estudos e descobertas técnicas.
+
+Acredito que **escrever sobre o que se aprende** é uma das melhores formas
+de consolidar conhecimento — e é por isso que este blog existe.
+
+---
+
+## 🎯 O que você encontra aqui
+
+- **Projetos autorais** com código-fonte aberto
+- **Tutoriais práticos** sobre linguagens, frameworks e ferramentas
+- **Post-mortems** de bugs e decisões de arquitetura
+- **Anotações de estudo** sobre tecnologia em geral
+
+---
+
+## 🛠️ Tecnologias que uso
+
+**Linguagens:** Python · Ruby · JavaScript · TypeScript · SQL · Bash
+
+**Back-end:** FastAPI · Ruby on Rails · Node.js · PostgreSQL · Redis
+
+**Front-end:** React · HTML · CSS · Jekyll
+
+**DevOps:** Docker · GitHub Actions · Linux · Nginx
+
+**Outros:** Git · REST · GraphQL
+
+---
+
+## 📌 Como falar comigo
+
+- **GitHub:** [github.com/maxbit1980](https://github.com/maxbit1980)
+- **LinkedIn:** [linkedin.com/in/seu-usuario-linkedin](https://linkedin.com/in/seu-usuario-linkedin)
+- **E-mail:** [seu@email.com](mailto:seu@email.com)
+
+Fique à vontade para abrir uma *issue* ou mandar uma mensagem — respondo sempre
+que possível. 🚀
+```
+
+---
+
+## 4. Testar e publicar
+
+```bash
+cd ~/Maxblog
+bundle exec jekyll serve
+```
+
+Veja em **http://127.0.0.1:4000/**. Depois:
+
+```bash
+git add .
+git commit -m "Atualiza perfil com usuário maxbit1980"
+git push
+```
+
+---
+
+## O que ainda falta você preencher
+
+Deixei como placeholder (marquei com `seu-` ou `seu@`):
+
+| Campo | Onde | O que colocar |
+|---|---|---|
+| `seu@email.com` | `_config.yml`, `index.md`, `about.md` | Seu e-mail real |
+| `seu-usuario-linkedin` | `_config.yml`, `index.md`, `about.md` | Seu LinkedIn (ou remova a linha) |
+| `seu-usuario-twitter` | `_config.yml` | Seu Twitter/X (ou remova) |
+| Lista de **tecnologias** | `about.md` | Só as que você realmente usa |
+| Tabela de **projetos** | `index.md` | Seus repositórios reais |
+
+---
+
+## Quer um `index.md` ainda mais forte?
+
+Posso adicionar **badges de tecnologias** com shields.io, tipo:
+
+```markdown
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Ruby](https://img.shields.io/badge/Ruby-CC342D?style=flat&logo=ruby&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
+```
+
+Isso deixa o `about.md` e o `index.md` com cara de portfólio profissional.
+
+Me passa:
+1. Seu **e-mail** (ou diga "não quero mostrar")
+2. Seu **LinkedIn** (ou "não tenho")
+3. As **linguagens/tecnologias** que você realmente usa
+4. Nomes de **2-3 repositórios** seus que quer destacar
+
+Aí eu já deixo os três arquivos 100% prontos para colar e publicar.# Atualizando com seu usuário do GitHub
+
+Seu usuário é **`maxbit1980`**. Vou substituir em todos os arquivos.
+
+---
+
+## 1. `_config.yml` atualizado
+
+```bash
+nano ~/Maxblog/_config.yml
+```
+
+```yaml
+title: Maxblog
+tagline: "Código, projetos e aprendizado contínuo"
+description: >-
+  Portfólio técnico e blog pessoal de Cesar. Aqui compartilho projetos,
+  soluções de código, estudos em desenvolvimento de software e anotações
+  sobre tecnologia.
+author:
+  name: Cesar
+  email: seu@email.com
+
+baseurl: ""
+url: ""
+
+github_username: maxbit1980
+linkedin_username: seu-usuario-linkedin
+twitter_username: seu-usuario-twitter
+
+minima:
+  skin: dark
+  date_format: "%d/%m/%Y"
+  social:
+    - title: GitHub
+      icon: github
+      url: https://github.com/maxbit1980
+    - title: LinkedIn
+      icon: linkedin
+      url: https://linkedin.com/in/seu-usuario-linkedin
+    - title: E-mail
+      icon: envelope
+      url: mailto:seu@email.com
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: true
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+sass:
+  quiet_deps: true
+  silence_deprecations:
+    - import
+    - global-builtin
+    - color-functions
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - .github/
+  - README.md
+```
+
+---
+
+## 2. `index.md` atualizado
+
+```bash
+nano ~/Maxblog/index.md
+```
+
+```markdown
+---
+layout: home
+title: Início
+---
+
+# 👋 Olá, eu sou o Cesar
+
+Desenvolvedor apaixonado por **resolver problemas com código**, construir
+projetos úteis e compartilhar o que aprendo no caminho.
+
+Neste blog você vai encontrar:
+
+- 🚀 **Projetos pessoais** — experimentos, ferramentas e aplicações completas
+- 🧠 **Anotações técnicas** — tutoriais, soluções de bugs e boas práticas
+- 📚 **Estudos** — algoritmos, estruturas de dados, novas linguagens e frameworks
+- 🛠️ **DevOps & Automação** — scripts, CI/CD e produtividade
+
+---
+
+## 🗂️ Projetos em destaque
+
+> 💡 Veja todos os repositórios em [github.com/maxbit1980](https://github.com/maxbit1980)
+
+| Projeto | Descrição | Stack |
+|---|---|---|
+| **[Projeto 1](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
+| **[Projeto 2](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
+| **[Projeto 3](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
+
+---
+
+## 📬 Contato
+
+- **GitHub:** [@maxbit1980](https://github.com/maxbit1980)
+- **LinkedIn:** [seu-usuario-linkedin](https://linkedin.com/in/seu-usuario-linkedin)
+- **E-mail:** [seu@email.com](mailto:seu@email.com)
+
+---
+
+## 📝 Posts recentes
+```
+
+---
+
+## 3. `about.md` atualizado
+
+```bash
+nano ~/Maxblog/about.md
+```
+
+```markdown
+---
+layout: page
+title: Sobre
+permalink: /sobre/
+---
+
+## 👨‍💻 Quem sou
+
+Meu nome é **Cesar**, sou desenvolvedor de software e este é o meu espaço
+para documentar projetos, estudos e descobertas técnicas.
+
+Acredito que **escrever sobre o que se aprende** é uma das melhores formas
+de consolidar conhecimento — e é por isso que este blog existe.
+
+---
+
+## 🎯 O que você encontra aqui
+
+- **Projetos autorais** com código-fonte aberto
+- **Tutoriais práticos** sobre linguagens, frameworks e ferramentas
+- **Post-mortems** de bugs e decisões de arquitetura
+- **Anotações de estudo** sobre tecnologia em geral
+
+---
+
+## 🛠️ Tecnologias que uso
+
+**Linguagens:** Python · Ruby · JavaScript · TypeScript · SQL · Bash
+
+**Back-end:** FastAPI · Ruby on Rails · Node.js · PostgreSQL · Redis
+
+**Front-end:** React · HTML · CSS · Jekyll
+
+**DevOps:** Docker · GitHub Actions · Linux · Nginx
+
+**Outros:** Git · REST · GraphQL
+
+---
+
+## 📌 Como falar comigo
+
+- **GitHub:** [github.com/maxbit1980](https://github.com/maxbit1980)
+- **LinkedIn:** [linkedin.com/in/seu-usuario-linkedin](https://linkedin.com/in/seu-usuario-linkedin)
+- **E-mail:** [seu@email.com](mailto:seu@email.com)
+
+Fique à vontade para abrir uma *issue* ou mandar uma mensagem — respondo sempre
+que possível. 🚀
+```
+
+---
+
+## 4. Testar e publicar
+
+```bash
+cd ~/Maxblog
+bundle exec jekyll serve
+```
+
+Veja em **http://127.0.0.1:4000/**. Depois:
+
+```bash
+git add .
+git commit -m "Atualiza perfil com usuário maxbit1980"
+git push
+```
+
+---
+
+## O que ainda falta você preencher
+
+Deixei como placeholder (marquei com `seu-` ou `seu@`):
+
+| Campo | Onde | O que colocar |
+|---|---|---|
+| `seu@email.com` | `_config.yml`, `index.md`, `about.md` | Seu e-mail real |
+| `seu-usuario-linkedin` | `_config.yml`, `index.md`, `about.md` | Seu LinkedIn (ou remova a linha) |
+| `seu-usuario-twitter` | `_config.yml` | Seu Twitter/X (ou remova) |
+| Lista de **tecnologias** | `about.md` | Só as que você realmente usa |
+| Tabela de **projetos** | `index.md` | Seus repositórios reais |
+
+---
+
+## Quer um `index.md` ainda mais forte?
+
+Posso adicionar **badges de tecnologias** com shields.io, tipo:
+
+```markdown
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![Ruby](https://img.shields.io/badge/Ruby-CC342D?style=flat&logo=ruby&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
+```
+
+Isso deixa o `about.md` e o `index.md` com cara de portfólio profissional.
+
+Me passa:
+1. Seu **e-mail** (ou diga "não quero mostrar")
+2. Seu **LinkedIn** (ou "não tenho")
+3. As **linguagens/tecnologias** que você realmente usa
+4. Nomes de **2-3 repositórios** seus que quer destacar
+
+Aí eu já deixo os três arquivos 100% prontos para colar e publicar.

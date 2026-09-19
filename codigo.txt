@@ -1,0 +1,6 @@
+
+
+no terminal digite ou copie e cole:
+
+
+cd ~/Maxblog && bundle exec jekyll serve

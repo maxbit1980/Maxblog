@@ -1,0 +1,57 @@
+seutitle: Maxblog
+tagline: "Código, projetos e aprendizado contínuo"
+description: >-
+  Portfólio técnico e blog pessoal de Cesar. Aqui compartilho projetos,
+  soluções de código, estudos em desenvolvimento de software e anotações
+  sobre tecnologia.
+author:
+  name:Paulo Cesar
+  email:maxbit1980@gmail.com 
+
+baseurl: ""
+url: ""
+
+github_username: maxbit1980
+linkedin_username: seu-usuario-linkedin
+twitter_username: seu-usuario-twitter
+
+minima:
+  skin: dark
+  date_format: "%d/%m/%Y"
+  social:
+    - title: GitHub
+      icon: github
+      url: https://github.com/maxbit1980
+    - title: LinkedIn
+      icon: linkedin
+      url: https://linkedin.com/in/seu-usuario-linkedin
+    - title: E-mail
+      icon: envelope
+      url: mailto:maxbit1980@gmail.com
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: true
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+sass:
+  quiet_deps: true
+  silence_deprecations:
+    - import
+    - global-builtin
+    - color-functions
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - .github/
+  - README.md
