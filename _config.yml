@@ -9,9 +9,8 @@ author:
   name:Paulo Cesar
   email:maxbit1980@gmail.com 
 
-baseurl: ""
-url: ""
-
+baseurl: "/Maxblog"
+url: "https://maxbit1980.github.io"
 github_username: maxbit1980
 linkedin_username: seu-usuario-linkedin
 twitter_username: seu-usuario-twitter
