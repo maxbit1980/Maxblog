@@ -4,3 +4,13 @@ _site/
 .jekyll-metadata
 vendor/
 Gemfile.lock
+# Credenciais e segredos — NUNCA versionar
+comandosuteis/token.txt
+comandosuteis/
+*.token
+*.key
+*.pem
+*.txt.token
+.env
+.env.*
+secrets/
