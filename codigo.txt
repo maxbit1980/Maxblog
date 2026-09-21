@@ -10,3 +10,8 @@ cd ~/Maxblog && bundle exec jekyll serve
 
 cd ~/Maxblog
 bundle exec jekyll serve
+
+
+bundle exec jekyll serve --baseurl ""
+
+

@@ -1,5 +1,412 @@
 ---
 ---
 
+/* ============================================================
+   MaxBlog — Tema dark tech profissional
+   Override do Minima
+   ============================================================ */
+
 @import "minima";
-@import "custom";
+
+/* ---------- Paleta ---------- */
+$bg-deep:      #070b14;      // fundo base
+$bg-panel:     #0d1524;      // painéis/cards
+$bg-panel-2:   #111c31;      // hover
+$border:       #1e2c47;
+$text:         #d7e0ee;
+$text-dim:     #8896ad;
+$accent:       #4f8cff;      // azul tech
+$accent-2:     #22d3ee;      // ciano
+$accent-glow:  rgba(79, 140, 255, 0.35);
+
+/* ---------- Reset global ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: #d7e0ee !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
+               "Roboto", "Helvetica Neue", Arial, sans-serif !important;
+  font-size: 16px;
+  line-height: 1.7;
+  background-color: #070b14;
+  background-image:
+    linear-gradient(rgba(7, 11, 20, 0.82), rgba(7, 11, 20, 0.92)),
+    url('/Maxblog/assets/img/background.jpg') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+/* ---------- Wrapper ---------- */
+.wrapper {
+  max-width: 1080px;
+  padding: 0 24px;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  background: rgba(7, 11, 20, 0.85) !important;
+  border-top: 3px solid $accent;
+  border-bottom: 1px solid $border;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.site-title,
+.site-title:visited {
+  color: #ffffff !important;
+  font-weight: 800;
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  background: linear-gradient(90deg, $accent, $accent-2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.site-nav .page-link {
+  color: $text-dim !important;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  text-decoration: none;
+  &:hover { color: $accent-2 !important; }
+}
+
+/* ---------- Títulos ---------- */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+h1 { font-size: 2.15rem; margin-bottom: 1rem; }
+h2 {
+  font-size: 1.55rem;
+  margin-top: 2.5rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid $border;
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: -1px;
+    width: 64px; height: 2px;
+    background: linear-gradient(90deg, $accent, $accent-2);
+    border-radius: 2px;
+  }
+}
+h3 { font-size: 1.2rem; color: $accent-2; }
+
+/* ---------- Links ---------- */
+a {
+  color: $accent !important;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.18s ease;
+  &:hover {
+    color: $accent-2 !important;
+    border-bottom-color: $accent-2;
+  }
+  &:visited { color: lighten($accent, 5%); }
+}
+
+/* ---------- Parágrafos e listas ---------- */
+p, li { color: $text; }
+
+/* ---------- Tabelas ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  background: $bg-panel;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid $border;
+}
+th {
+  background: $bg-panel-2;
+  color: #ffffff !important;
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  border-bottom: 1px solid $border;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid $border;
+  color: $text;
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(79, 140, 255, 0.06); }
+
+/* ---------- Blockquote ---------- */
+blockquote {
+  border-left: 3px solid $accent !important;
+  background: rgba(79, 140, 255, 0.06);
+  padding: 14px 20px;
+  margin: 1.5rem 0;
+  color: $text-dim !important;
+  font-style: normal;
+  border-radius: 0 8px 8px 0;
+}
+
+/* ---------- Código inline e blocos ---------- */
+code {
+  background: $bg-panel-2;
+  color: $accent-2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  border: 1px solid $border;
+}
+pre {
+  background: #060a13 !important;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 18px;
+  overflow-x: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  code { background: transparent; border: none; padding: 0; color: $text; }
+}
+
+/* ---------- Posts ---------- */
+.post-list > li {
+  background: $bg-panel;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  transition: all 0.2s ease;
+  &:hover {
+    border-color: $accent;
+    box-shadow: 0 6px 24px $accent-glow;
+    transform: translateY(-2px);
+  }
+}
+.post-link {
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 1.15rem;
+  border-bottom: none;
+  &:hover { color: $accent-2 !important; border-bottom: none; }
+}
+.post-meta { color: $text-dim !important; font-size: 0.85rem; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  background: rgba(7, 11, 20, 0.9) !important;
+  border-top: 1px solid $border;
+  margin-top: 4rem;
+  padding: 2.5rem 0;
+  color: $text-dim !important;
+}
+.footer-heading {
+  color: #ffffff !important;
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, $accent, $accent-2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.contact-list, .social-media-list {
+  list-style: none;
+  padding-left: 0;
+  li { color: $text-dim; margin-bottom: 6px; }
+}
+.social-media-list a { color: $text !important; }
+.social-media-list a:hover { color: $accent-2 !important; }
+
+/* ---------- Botão/highlight para seções ---------- */
+hr {
+  border: none;
+  border-top: 1px solid $border;
+  margin: 2.5rem 0;
+}
+
+/* ---------- Seleção de texto ---------- */
+::selection {
+  background: $accent;
+  color: #ffffff;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: $bg-deep; }
+::-webkit-scrollbar-thumb {
+  background: $border;
+  border-radius: 5px;
+  &:hover { background: $accent; }
+}
+
+/* ---------- Responsivo ---------- */
+@media screen and (max-width: 700px) {
+  h1 { font-size: 1.7rem; }
+  h2 { font-size: 1.3rem; }
+  .wrapper { padding: 0 16px; }
+  body { font-size: 15px; }
+}
+/* ============================================================
+   CORREÇÃO DE CONTRASTE + TÍTULOS DESTACADOS
+   ============================================================ */
+
+
+/* ---------- Fundo com imagem ---------- */
+html {
+  background-color: #070b14 !important;
+}
+
+.page-content,
+.wrapper {
+  background-color: transparent !important;
+}
+
+.site-header {
+  background: rgba(7, 11, 20, 0.85) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #1e2c47 !important;
+}
+
+.site-footer {
+  background: rgba(7, 11, 20, 0.92) !important;
+  border-top: 1px solid #1e2c47 !important;
+}
+
+body {
+  color: #d7e0ee !important;
+  background-color: #070b14;
+  background-image:
+    linear-gradient(rgba(7, 11, 20, 0.82), rgba(7, 11, 20, 0.92)),
+    url('/Maxblog/assets/img/background.jpg') !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+}
+
+
+
+
+/* ---------- H1 como chip destacado ---------- */
+h1 {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(79, 140, 255, 0.20), rgba(34, 211, 238, 0.12)) !important;
+  border-left: 4px solid #4f8cff;
+  padding: 16px 22px;
+  border-radius: 10px;
+  margin: 2rem 0 1.5rem;
+  display: inline-block;
+  box-shadow: 0 6px 24px rgba(79, 140, 255, 0.15);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- H2 como chip com barra colorida ---------- */
+h2 {
+  color: #ffffff !important;
+  background: rgba(79, 140, 255, 0.10) !important;
+  border-left: 4px solid #22d3ee;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin: 2.5rem 0 1.2rem;
+  display: inline-block;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+h2::after { display: none; } /* remove o traço antigo do h2 */
+
+/* ---------- H3 ---------- */
+h3 {
+  color: #22d3ee !important;
+  background: rgba(34, 211, 238, 0.08);
+  border-left: 3px solid #22d3ee;
+  padding: 8px 14px;
+  border-radius: 6px;
+  display: inline-block;
+  margin: 1.8rem 0 1rem;
+}
+
+/* ---------- Parágrafos, listas e tabelas sempre legíveis ---------- */
+p, li, td, .post-content {
+  color: #d7e0ee !important;
+}
+
+th {
+  color: #ffffff !important;
+  background: rgba(79, 140, 255, 0.18) !important;
+}
+
+td {
+  color: #d7e0ee !important;
+  background: rgba(13, 21, 36, 0.7) !important;
+  border-color: #1e2c47 !important;
+}
+
+/* ---------- Cabeçalho de tabela com borda de destaque ---------- */
+table {
+  border: 1px solid #1e2c47 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Links em tabela ficam com glow ---------- */
+td a {
+  color: #4f8cff !important;
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+td a:hover {
+  color: #22d3ee !important;
+  text-shadow: 0 0 12px rgba(34, 211, 238, 0.6);
+}
+
+/* ---------- Blockquote (frase "Veja todos os repositórios...") ---------- */
+blockquote {
+  color: #d7e0ee !important;
+  background: rgba(79, 140, 255, 0.10) !important;
+  border-left: 4px solid #4f8cff !important;
+  padding: 14px 20px;
+  border-radius: 8px;
+}
+
+/* ---------- Site title com gradiente forte ---------- */
+.site-title,
+.site-title:visited {
+  color: #ffffff !important;
+  background: linear-gradient(90deg, #4f8cff, #22d3ee) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  font-weight: 800;
+}
+
+/* ---------- Header e footer com fundo sólido ---------- */
+.site-header {
+  background: rgba(7, 11, 20, 0.95) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #1e2c47 !important;
+}
+
+.site-footer {
+  background: rgba(7, 11, 20, 0.95) !important;
+  border-top: 1px solid #1e2c47 !important;
+  color: #8896ad !important;
+}
+.site-footer * {
+  color: #8896ad;
+}
+.site-footer .footer-heading {
+  color: #ffffff !important;
+  background: none !important;
+  -webkit-text-fill-color: #ffffff !important;
+}

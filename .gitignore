@@ -3,7 +3,7 @@ _site/
 .jekyll-cache/
 .jekyll-metadata
 vendor/
-Gemfile.lock
+
 # Credenciais e segredos — NUNCA versionar
 comandosuteis/token.txt
 comandosuteis/

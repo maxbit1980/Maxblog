@@ -1,0 +1,10 @@
+
+
+
+
+
+Parapublicar pelo script
+
+Cesar@Cesar-PC:~$ 
+
+publicar-app

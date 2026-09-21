@@ -6,7 +6,7 @@ permalink: /
 
 # 👋 Olá, eu sou o Paulo Cesar
 
-Desenvolvedor de software com foco em **resolver problemas reais através de código**,
+Desenvolvedor com foco em **resolver problemas reais através de código**,
 construir projetos úteis e documentar o que aprendo no caminho.
 
 Neste blog você vai encontrar:
@@ -24,11 +24,8 @@ Neste blog você vai encontrar:
 
 | Projeto | Descrição | Stack |
 |---|---|---|
-| **[Status da Bateria](https://github.com/maxbit1980/Bateria)** | Relógio com monitor de bateria que exibe promessas bíblicas a cada 10 segundos. | — |
-| **[Secreto](https://github.com/maxbit1980/secreto)** | Gerenciador de senhas 100% offline. | — |
-
-<!-- Adicione novos projetos seguindo o padrão da tabela acima.
-     Preencha a coluna "Stack" com as tecnologias reais (ex.: Python, C#, JS). -->
+| **[Status da Bateria](https://github.com/maxbit1980/Bateria)** | Relógio com monitor de bateria exibindo promessas bíblicas a cada 10 segundos. | Python |
+| **[Secreto](https://github.com/maxbit1980/secreto)** | Gerenciador de senhas 100% offline. | Python |
 
 ---
 

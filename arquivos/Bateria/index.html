@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Monitor de Carregamento · Promessas</title>
+    <style>
+        :root {
+            --bg-color: #05060d;
+            --card-bg: rgba(15, 15, 30, 0.82);
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --neon-blue: #2a8bff;
+            --neon-cyan: #00d4ff;
+            --neon-red: #ff2a4d;
+            --neon-crimson: #d10039;
+            --danger: #ff2a2a;
+            --neon-yellow: #ffcc00;
+            --pix-blue: #2a8bff;
+            --pix-red: #ff2a4d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 16px;
+            overflow-x: hidden;
+            position: relative;
+            background: linear-gradient(160deg,
+                #12000a 0%,
+                #0a0014 20%,
+                #05070f 45%,
+                #001028 75%,
+                #001a3d 100%);
+            background-attachment: fixed;
+        }
+
+        /* Camadas de brilho vermelho + azul */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(255, 20, 60, 0.22), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(20, 90, 255, 0.22), transparent 50%);
+        }
+
+        body > * { position: relative; z-index: 1; }
+
+        /* --- RELÓGIO & DATA GIGANTES --- */
+        .clock-container {
+            text-align: center;
+            margin-top: 4px;
+            width: 100%;
+        }
+
+        .time-display {
+            font-size: 4.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            text-shadow:
+                0 0 18px rgba(0, 212, 255, 0.7),
+                0 0 40px rgba(42, 139, 255, 0.4),
+                0 0 60px rgba(255, 42, 77, 0.25);
+            line-height: 1;
+        }
+
+        .date-display {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--neon-red);
+            text-shadow: 0 0 12px rgba(255, 42, 77, 0.65);
+            margin-top: 8px;
+            text-transform: capitalize;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- CONTAINER DA BATERIA --- */
+        .container {
+            width: 100%;
+            max-width: 380px;
+            background: var(--card-bg);
+            border-radius: 32px;
+            padding: 26px 20px;
+            border: 1px solid rgba(120, 150, 255, 0.18);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow:
+                0 0 30px rgba(0, 0, 0, 0.85),
+                0 0 22px rgba(42, 139, 255, 0.15),
+                0 0 22px rgba(255, 42, 77, 0.1) inset;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .battery-ring-container {
+            position: relative;
+            width: 190px;
+            height: 190px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .battery-ring {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .battery-ring circle {
+            fill: none;
+            stroke-width: 14;
+            stroke-linecap: round;
+        }
+
+        .bg-circle { stroke: #1a2035; }
+
+        .progress-circle {
+            stroke: var(--neon-cyan);
+            stroke-dasharray: 440;
+            stroke-dashoffset: 440;
+            transition: stroke-dashoffset 0.8s ease-in-out, stroke 0.5s ease;
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+
+        .battery-value {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-shadow:
+                0 0 12px rgba(255, 255, 255, 0.4),
+                0 0 24px rgba(42, 139, 255, 0.35);
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.05);
+            font-size: 1.05rem;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.charging {
+            background-color: rgba(42, 139, 255, 0.18);
+            border-color: var(--neon-blue);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 18px rgba(42, 139, 255, 0.45);
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+        }
+
+        .status-badge.charging .status-dot {
+            background-color: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-cyan);
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0%   { transform: scale(0.9); opacity: 0.7; }
+            50%  { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
+
+        /* --- CAIXA DE VERSÍCULOS --- */
+        .verse-box {
+            width: 100%;
+            max-width: 380px;
+            background: linear-gradient(145deg, rgba(30, 0, 20, 0.75), rgba(0, 15, 45, 0.75));
+            border: 1.5px solid rgba(120, 150, 255, 0.35);
+            border-left: 5px solid var(--neon-red);
+            border-right: 5px solid var(--neon-blue);
+            border-radius: 22px;
+            padding: 18px 18px 16px;
+            margin-top: 6px;
+            text-align: center;
+            box-shadow:
+                0 0 22px rgba(255, 42, 77, 0.15),
+                0 0 22px rgba(42, 139, 255, 0.15);
+            transition: opacity 0.5s ease;
+            min-height: 118px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .verse-text {
+            font-size: 0.98rem;
+            line-height: 1.5;
+            color: #eaeaff;
+            font-style: italic;
+            text-shadow: 0 0 8px rgba(42, 139, 255, 0.25);
+        }
+
+        .verse-ref {
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--neon-red), var(--neon-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: none;
+        }
+
+        /* --- RODAPÉ DE CRÉDITOS --- */
+        .app-footer {
+            margin-top: 18px;
+            padding-top: 16px;
+            width: 100%;
+            max-width: 380px;
+            border-top: 1px solid rgba(120, 150, 255, 0.25);
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8a90b5;
+            letter-spacing: 0.5px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .app-footer .dev-credit strong {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px rgba(42, 139, 255, 0.8);
+            letter-spacing: 1px;
+        }
+
+        .donate-btn {
+            background: linear-gradient(145deg, #2a8bff, #c1003a);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            box-shadow:
+                0 3px 0 #4a0018,
+                0 0 18px rgba(255, 42, 77, 0.4),
+                0 0 18px rgba(42, 139, 255, 0.4);
+            transition: all 0.15s;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .donate-btn:active {
+            transform: translateY(2px);
+            box-shadow:
+                0 1px 0 #4a0018,
+                0 0 18px rgba(255, 42, 77, 0.6),
+                0 0 18px rgba(42, 139, 255, 0.6);
+        }
+
+        /* --- MODAL GENÉRICO --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-box {
+            background: linear-gradient(160deg, #0a0a18, #14001e);
+            border: 2px solid var(--neon-blue);
+            border-radius: 28px;
+            padding: 24px 20px;
+            max-width: 380px;
+            width: 100%;
+            position: relative;
+            animation: popIn 0.3s ease;
+            box-shadow:
+                0 0 45px rgba(42, 139, 255, 0.55),
+                0 0 45px rgba(255, 42, 77, 0.3);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.92); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* ========== MODAL PIX ========== */
+        .pix-modal {
+            border-color: var(--neon-blue);
+            box-shadow:
+                0 0 50px rgba(42, 139, 255, 0.6),
+                0 0 30px rgba(255, 42, 77, 0.35) inset;
+            max-height: 92vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-blue) #08151a;
+        }
+
+        .pix-modal::-webkit-scrollbar { width: 5px; }
+        .pix-modal::-webkit-scrollbar-thumb {
+            background: var(--neon-blue);
+            border-radius: 4px;
+        }
+
+        .pix-modal h3 {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 12px rgba(42, 139, 255, 0.7);
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+
+        .pix-modal p {
+            font-size: 0.9rem;
+            color: #d6e4ff;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .pix-modal p strong {
+            color: var(--neon-red);
+            font-size: 1.05rem;
+            text-shadow: 0 0 10px rgba(255, 42, 77, 0.7);
+        }
+
+        .pix-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 1.15rem;
+            color: #8a90b5;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .pix-close:hover {
+            color: var(--neon-red);
+            background: rgba(255, 42, 77, 0.15);
+            transform: rotate(90deg);
+        }
+
+        .donation-value-wrapper {
+            background: #060a18;
+            border: 1.5px solid var(--neon-blue);
+            border-radius: 18px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            text-align: center;
+            box-shadow: 0 0 18px rgba(42, 139, 255, 0.25) inset;
+        }
+
+        .donation-value-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--neon-cyan);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .donation-input-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .currency-symbol {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 12px rgba(42, 139, 255, 0.7);
+        }
+
+        .donation-input {
+            background: transparent !important;
+            border: none !important;
+            font-size: 2rem !important;
+            font-weight: 700 !important;
+            color: var(--neon-cyan) !important;
+            text-align: center !important;
+            text-shadow: 0 0 12px rgba(42, 139, 255, 0.7) !important;
+            padding: 0 !important;
+            width: 130px !important;
+            outline: none !important;
+            box-shadow: none !important;
+            margin-bottom: 0 !important;
+        }
+
+        .donation-input::-webkit-outer-spin-button,
+        .donation-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .donation-input { -moz-appearance: textfield; appearance: textfield; }
+
+        .quick-values {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quick-value-btn {
+            background: rgba(42, 139, 255, 0.12);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-cyan);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .quick-value-btn:hover,
+        .quick-value-btn.active {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-red));
+            color: #ffffff;
+            box-shadow: 0 0 16px rgba(42, 139, 255, 0.6);
+        }
+
+        .quick-value-btn:active { transform: scale(0.95); }
+
+        .min-hint {
+            font-size: 0.68rem;
+            color: #6a7290;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .pix-key-box {
+            background: #060a18;
+            border: 1.5px dashed var(--neon-blue);
+            border-radius: 16px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+
+        .pix-key-box small {
+            font-size: 0.68rem;
+            color: #8a90b5;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .pix-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.68rem;
+            color: var(--neon-cyan);
+            word-break: break-all;
+            line-height: 1.4;
+            max-height: 90px;
+            overflow-y: auto;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-blue) #060a18;
+        }
+
+        .pix-code::-webkit-scrollbar { width: 4px; }
+        .pix-code::-webkit-scrollbar-thumb {
+            background: var(--neon-blue);
+            border-radius: 4px;
+        }
+
+        .pix-btn {
+            border: none;
+            border-radius: 40px;
+            padding: 14px 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: all 0.15s;
+        }
+
+        .pix-btn-primary {
+            background: linear-gradient(145deg, var(--neon-blue), #c1003a);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 0 #2a0016, 0 0 22px rgba(42, 139, 255, 0.5);
+        }
+        .pix-btn-primary:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #2a0016, 0 0 22px rgba(42, 139, 255, 0.7);
+        }
+
+        .pix-btn-ghost {
+            background: transparent;
+            color: #a8b0d0;
+            border: 1px solid rgba(120, 150, 255, 0.35);
+            margin-top: 10px;
+            font-size: 0.82rem;
+            padding: 10px 20px;
+        }
+        .pix-btn-ghost:active { transform: scale(0.97); }
+
+        .pix-success {
+            background: linear-gradient(145deg, #00d47a, #007a48) !important;
+            color: #001a0d !important;
+            border-color: #a8ffcf !important;
+            box-shadow: 0 4px 0 #004d2e, 0 0 24px #00d47a !important;
+        }
+
+        .pix-error {
+            border-color: var(--neon-red) !important;
+            color: var(--neon-red) !important;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* Ajustes para telas muito pequenas */
+        @media (max-height: 720px) {
+            .time-display { font-size: 3.4rem; }
+            .date-display { font-size: 1.05rem; }
+            .battery-ring-container { width: 150px; height: 150px; }
+            .battery-value { font-size: 2.2rem; }
+            .container { padding: 18px 16px; gap: 12px; margin: 10px 0; }
+            .verse-text { font-size: 0.88rem; }
+            .verse-ref { font-size: 0.75rem; }
+            .verse-box { padding: 14px; min-height: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- RELÓGIO E DATA GIGANTES -->
+    <div class="clock-container">
+        <div class="time-display" id="clockText">00:00:00</div>
+        <div class="date-display" id="dateText">Carregando data...</div>
+    </div>
+
+    <!-- CONTAINER DA BATERIA -->
+    <div class="container">
+        <div class="battery-ring-container">
+            <svg class="battery-ring" viewBox="0 0 160 160">
+                <circle class="bg-circle" cx="80" cy="80" r="70"></circle>
+                <circle class="progress-circle" id="progressCircle" cx="80" cy="80" r="70"></circle>
+            </svg>
+            <div class="battery-value" id="batteryText">--%</div>
+        </div>
+
+        <div class="status-badge" id="statusBadge">
+            <div class="status-dot"></div>
+            <span id="statusText">Desconectado</span>
+        </div>
+    </div>
+
+    <!-- VERSÍCULO DE PROMESSA (rotativo a cada 10s) -->
+    <div class="verse-box" id="verseBox">
+        <div class="verse-text" id="verseText">Carregando promessa...</div>
+        <div class="verse-ref" id="verseRef">— — —</div>
+    </div>
+
+    <!-- RODAPÉ DE CRÉDITOS -->
+    <div class="app-footer">
+        <div class="dev-credit">💻 Desenvolvido por <strong>Paulo César</strong></div>
+        <button class="donate-btn" id="openPixBtn">💚 Apoiar com PIX (a partir de R$ 1,00)</button>
+    </div>
+
+    <!-- ========== MODAL PIX (DOAÇÃO) ========== -->
+    <div id="pixModal" class="modal-overlay">
+        <div class="modal-box pix-modal">
+            <span class="pix-close" id="pixCloseBtn" title="Fechar">✕</span>
+            <h3>💚 APOIE O DESENVOLVEDOR</h3>
+            <p>
+                Se este app foi útil pra você,<br>
+                considere uma doação via <strong>PIX</strong>.<br>
+                Escolha o valor — <strong>a partir de R$ 1,00</strong>. 🙏
+            </p>
+
+            <div class="donation-value-wrapper">
+                <span class="donation-value-label">💰 Escolha o valor da doação</span>
+                <div class="donation-input-wrapper">
+                    <span class="currency-symbol">R$</span>
+                    <input type="number" class="donation-input" id="donationAmount" min="1" step="1" value="3">
+                </div>
+                <div class="quick-values">
+                    <button class="quick-value-btn" data-value="1">R$ 1</button>
+                    <button class="quick-value-btn" data-value="2">R$ 2</button>
+                    <button class="quick-value-btn active" data-value="3">R$ 3</button>
+                    <button class="quick-value-btn" data-value="5">R$ 5</button>
+                    <button class="quick-value-btn" data-value="10">R$ 10</button>
+                    <button class="quick-value-btn" data-value="20">R$ 20</button>
+                </div>
+                <div class="min-hint">Valor mínimo: R$ 1,00</div>
+            </div>
+
+            <div class="pix-key-box">
+                <small>🔑 CÓDIGO PIX (COPIA E COLA)</small>
+                <div class="pix-code" id="pixCodeDisplay">Gerando código PIX...</div>
+            </div>
+
+            <button class="pix-btn pix-btn-primary" id="copyPixBtn">📋 COPIAR CÓDIGO PIX</button>
+            <button class="pix-btn pix-btn-ghost" id="closePixBtn">AGORA NÃO</button>
+        </div>
+    </div>
+
+<script>
+    (function () {
+        // ============================================================
+        // ⚙️ CONFIGURAÇÃO PIX
+        // ============================================================
+        const PIX_KEY = 'bf60e9ea-dbd3-43f1-8a64-7dbdb5191a71';
+        const PIX_NAME = 'PAULO CESAR';
+        const PIX_CITY = 'SAO PAULO';
+        const MIN_DONATION = 1.00;
+        const DEFAULT_DONATION = 3.00;
+
+        // ============ RELÓGIO E DATA ============
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clockText').textContent =
+                `${hours}:${minutes}:${seconds}`;
+
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('dateText').textContent =
+                now.toLocaleDateString('pt-BR', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ============ SISTEMA DE BATERIA (sem áudio) ============
+        const batteryText = document.getElementById('batteryText');
+        const progressCircle = document.getElementById('progressCircle');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusText = document.getElementById('statusText');
+
+        const circumference = 2 * Math.PI * 70;
+
+        function updateBatteryUI(battery) {
+            const level = Math.round(battery.level * 100);
+            const isCharging = battery.charging;
+
+            batteryText.textContent = `${level}%`;
+            const offset = circumference - (level / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+
+            if (isCharging) {
+                progressCircle.style.stroke = 'var(--neon-blue)';
+                statusBadge.classList.add('charging');
+                statusText.textContent = 'Carregando...';
+            } else {
+                statusBadge.classList.remove('charging');
+                statusText.textContent = 'Fora da tomada';
+
+                if (level <= 20) {
+                    progressCircle.style.stroke = 'var(--danger)';
+                } else if (level <= 50) {
+                    progressCircle.style.stroke = 'var(--neon-red)';
+                } else {
+                    progressCircle.style.stroke = 'var(--neon-cyan)';
+                }
+            }
+        }
+
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(battery => {
+                updateBatteryUI(battery);
+                battery.addEventListener('chargingchange', () => updateBatteryUI(battery));
+                battery.addEventListener('levelchange', () => updateBatteryUI(battery));
+            });
+        } else {
+            statusText.textContent = 'Navegador sem suporte a bateria';
+            batteryText.textContent = 'N/A';
+        }
+
+        // ============================================================
+        // 📖 30 VERSÍCULOS DE PROMESSAS — rotaciona a cada 10s
+        // ============================================================
+        const verses = [
+            { t: "Porque eu bem sei os pensamentos que tenho a vosso respeito, diz o Senhor; pensamentos de paz, e não de mal, para vos dar o fim que esperais.", r: "Jeremias 29:11" },
+            { t: "Posso todas as coisas naquele que me fortalece.", r: "Filipenses 4:13" },
+            { t: "O Senhor é o meu pastor; nada me faltará.", r: "Salmos 23:1" },
+            { t: "Não temas, porque eu sou contigo; não te assombres, porque eu sou teu Deus; eu te fortaleço, e te ajudo, e te sustento com a destra da minha justiça.", r: "Isaías 41:10" },
+            { t: "Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.", r: "Mateus 11:28" },
+            { t: "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna.", r: "João 3:16" },
+            { t: "Porque aos seus anjos dará ordem a teu respeito, para te guardarem em todos os teus caminhos.", r: "Salmos 91:11" },
+            { t: "Não to mandei eu? Esforça-te, e tem bom ânimo; não temas, nem te espantes; porque o Senhor teu Deus é contigo, por onde quer que andares.", r: "Josué 1:9" },
+            { t: "E sabemos que todas as coisas contribuem juntamente para o bem daqueles que amam a Deus, daqueles que são chamados por seu decreto.", r: "Romanos 8:28" },
+            { t: "Confia no Senhor de todo o teu coração, e não te estribes no teu próprio entendimento.", r: "Provérbios 3:5" },
+            { t: "Deleita-te também no Senhor, e ele te concederá o que deseja o teu coração.", r: "Salmos 37:4" },
+            { t: "Mas os que esperam no Senhor renovarão as suas forças, subirão com asas como águias; correrão, e não se cansarão; caminharão, e não se fatigarão.", r: "Isaías 40:31" },
+            { t: "Mas buscai primeiro o reino de Deus, e a sua justiça, e todas estas coisas vos serão acrescentadas.", r: "Mateus 6:33" },
+            { t: "Lançando sobre ele toda a vossa ansiedade, porque ele tem cuidado de vós.", r: "1 Pedro 5:7" },
+            { t: "Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.", r: "Salmos 46:1" },
+            { t: "Porque estou certo de que nem a morte, nem a vida, nem os anjos, nem os principados, nem as potestades, nem o presente, nem o porvir nos poderá separar do amor de Deus.", r: "Romanos 8:38-39" },
+            { t: "Não te deixarei, nem te desampararei.", r: "Hebreus 13:5" },
+            { t: "Elevo os meus olhos para os montes: de onde me vem o socorro? O meu socorro vem do Senhor, que fez o céu e a terra.", r: "Salmos 121:1-2" },
+            { t: "Clama a mim, e responder-te-ei, e anunciar-te-ei coisas grandes e firmes que não sabes.", r: "Jeremias 33:3" },
+            { t: "Quando passares pelas águas estarei contigo, e quando pelos rios, eles não te submergirão; quando passares pelo fogo, não te queimarás, nem a chama arderá em ti.", r: "Isaías 43:2" },
+            { t: "As misericórdias do Senhor são a causa de não sermos consumidos, porque as suas misericórdias não têm fim; renovam-se cada manhã. Grande é a tua fidelidade.", r: "Lamentações 3:22-23" },
+            { t: "Ora, àquele que é poderoso para fazer tudo muito mais abundantemente além daquilo que pedimos ou pensamos, segundo o poder que em nós opera.", r: "Efésios 3:20" },
+            { t: "Clamaram, e o Senhor os ouviu, e os livrou de todas as suas angústias.", r: "Salmos 34:17" },
+            { t: "Pedi, e dar-se-vos-á; buscai, e encontrareis; batei, e abrir-se-vos-á.", r: "Mateus 7:7" },
+            { t: "A minha graça te basta, porque o meu poder se aperfeiçoa na fraqueza.", r: "2 Coríntios 12:9" },
+            { t: "O Senhor é a minha luz e a minha salvação; a quem temerei? O Senhor é a força da minha vida; de quem me recearei?", r: "Salmos 27:1" },
+            { t: "O nome do Senhor é torre forte; o justo corre para ela e está seguro.", r: "Provérbios 18:10" },
+            { t: "Deixo-vos a paz, a minha paz vos dou; não vo-la dou como o mundo a dá. Não se turbe o vosso coração, nem se atemorize.", r: "João 14:27" },
+            { t: "Lança o teu cuidado sobre o Senhor, e ele te susterá; nunca permitirá que o justo seja abalado.", r: "Salmos 55:22" },
+            { t: "Tu conservarás em paz aquele cuja mente está firme em ti, porque em ti confia.", r: "Isaías 26:3" }
+        ];
+
+        const verseText = document.getElementById('verseText');
+        const verseRef = document.getElementById('verseRef');
+        const verseBox = document.getElementById('verseBox');
+        let verseIndex = Math.floor(Math.random() * verses.length);
+
+        function showNextVerse() {
+            verseBox.style.opacity = '0';
+            setTimeout(() => {
+                const v = verses[verseIndex];
+                verseText.textContent = `"${v.t}"`;
+                verseRef.textContent = v.r;
+                verseBox.style.opacity = '1';
+                verseIndex = (verseIndex + 1) % verses.length;
+            }, 400);
+        }
+        showNextVerse();
+        setInterval(showNextVerse, 10000);
+
+        // ============================================================
+        // 💚 PIX — GERA PAYLOAD EMV COM CRC16
+        // ============================================================
+        function crc16(str) {
+            let crc = 0xFFFF;
+            for (let i = 0; i < str.length; i++) {
+                crc ^= str.charCodeAt(i) << 8;
+                for (let j = 0; j < 8; j++) {
+                    crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+                    crc &= 0xFFFF;
+                }
+            }
+            return crc.toString(16).toUpperCase().padStart(4, '0');
+        }
+
+        function buildPixPayload(key, name, city, amount) {
+            const f = (id, val) => id + String(val.length).padStart(2, '0') + val;
+            let p = '';
+            p += f('00', '01');
+            p += f('26', f('00', 'BR.GOV.BCB.PIX') + f('01', key));
+            p += f('52', '0000');
+            p += f('53', '986');
+            p += f('54', amount.toFixed(2));
+            p += f('58', 'BR');
+            p += f('59', name.substring(0, 25));
+            p += f('60', city.substring(0, 15));
+            p += f('62', f('05', '***'));
+            p += '6304';
+            return p + crc16(p);
+        }
+
+        // ============ PIX DOM ============
+        const pixModal = document.getElementById('pixModal');
+        const pixCodeDisplay = document.getElementById('pixCodeDisplay');
+        const copyPixBtn = document.getElementById('copyPixBtn');
+        const closePixBtn = document.getElementById('closePixBtn');
+        const pixCloseBtn = document.getElementById('pixCloseBtn');
+        const openPixBtn = document.getElementById('openPixBtn');
+        const donationAmount = document.getElementById('donationAmount');
+        const quickValueBtns = document.querySelectorAll('.quick-value-btn');
+
+        let currentAmount = DEFAULT_DONATION;
+
+        function getValidAmount() {
+            let v = parseFloat(donationAmount.value);
+            if (isNaN(v) || v < MIN_DONATION) v = MIN_DONATION;
+            v = Math.round(v * 100) / 100;
+            return v;
+        }
+
+        function refreshPixCode() {
+            currentAmount = getValidAmount();
+            const code = buildPixPayload(PIX_KEY, PIX_NAME, PIX_CITY, currentAmount);
+            pixCodeDisplay.textContent = code;
+
+            quickValueBtns.forEach(b => {
+                const val = parseFloat(b.dataset.value);
+                b.classList.toggle('active', val === currentAmount);
+            });
+            return code;
+        }
+
+        donationAmount.addEventListener('input', () => {
+            donationAmount.classList.remove('pix-error');
+            refreshPixCode();
+        });
+
+        donationAmount.addEventListener('blur', () => {
+            const v = parseFloat(donationAmount.value);
+            if (isNaN(v) || v < MIN_DONATION) {
+                donationAmount.value = MIN_DONATION.toFixed(2);
+                donationAmount.classList.add('pix-error');
+                setTimeout(() => donationAmount.classList.remove('pix-error'), 900);
+            } else {
+                donationAmount.value = v.toFixed(2);
+            }
+            refreshPixCode();
+        });
+
+        quickValueBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const val = parseFloat(btn.dataset.value);
+                donationAmount.value = val;
+                donationAmount.classList.remove('pix-error');
+                refreshPixCode();
+            });
+        });
+
+        function openPixModal() {
+            copyPixBtn.textContent = '📋 COPIAR CÓDIGO PIX';
+            copyPixBtn.classList.remove('pix-success');
+            refreshPixCode();
+            pixModal.classList.add('active');
+        }
+
+        function closePixModal() { pixModal.classList.remove('active'); }
+
+        openPixBtn.addEventListener('click', openPixModal);
+        closePixBtn.addEventListener('click', closePixModal);
+        pixCloseBtn.addEventListener('click', closePixModal);
+        pixModal.addEventListener('click', (e) => {
+            if (e.target === pixModal) closePixModal();
+        });
+
+        copyPixBtn.addEventListener('click', async () => {
+            const v = parseFloat(donationAmount.value);
+            if (isNaN(v) || v < MIN_DONATION) {
+                donationAmount.classList.add('pix-error');
+                alert('⚠️ O valor mínimo para doação é R$ 1,00');
+                return;
+            }
+
+            const code = refreshPixCode();
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(code);
+                } else {
+                    const ta = document.createElement('textarea');
+                    ta.value = code;
+                    ta.style.position = 'fixed';
+                    ta.style.opacity = '0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                }
+
+                copyPixBtn.textContent = '✅ COPIADO! OBRIGADO PELO APOIO!';
+                copyPixBtn.classList.add('pix-success');
+
+                setTimeout(() => closePixModal(), 1500);
+            } catch (err) {
+                alert('Não foi possível copiar automaticamente.\nCopie manualmente:\n\n' + code);
+            }
+        });
+
+        refreshPixCode();
+    })();
+</script>
+</body>
+</html>

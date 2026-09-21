@@ -1,9 +1,8 @@
 # ============================================================
-#  MaxBlog — Configuração do site (Jekyll + Tema Minima)
+#  MaxBlog — Configuração do site
 #  Autor: Paulo Cesar
 # ============================================================
 
-# ---------- Identidade do site ----------
 title:    MaxBlog
 tagline:  "Código, projetos e aprendizado contínuo"
 description: >-
@@ -13,33 +12,21 @@ description: >-
 lang: pt-BR
 timezone: America/Sao_Paulo
 
-# ---------- Autor ----------
 author:
   name:  Paulo Cesar
   email: maxbit1980@gmail.com
 
-# ---------- Tema ----------
 theme: minima
 
-# ---------- URL / Deploy ----------
 baseurl: "/Maxblog"
 url:     "https://maxbit1980.github.io"
 
-# ---------- Redes sociais (globais, usadas por jekyll-seo-tag) ----------
 github_username: maxbit1980
-# linkedin_username: <seu-usuario>   # descomente e preencha quando tiver
-# twitter_username:  <seu-usuario>   # descomente e preencha quando tiver
 
-# ---------- Tema Minima ----------
 minima:
   skin: dark
   date_format: "%d/%m/%Y"
   show_excerpts: true
-  # Páginas exibidas no cabeçalho (crie os .md correspondentes)
-  header_pages:
-    - sobre.md
-    - projetos.md
-    - blog.md
   social:
     - title: GitHub
       icon: github
@@ -49,12 +36,11 @@ minima:
       url: https://www.youtube.com/@MaxOliver80
     - title: Facebook
       icon: facebook
-      url: https://www.facebook.com/profile.php?id=100083087514893
+      url: "https://www.facebook.com/profile.php?id=100083087514893"
     - title: E-mail
       icon: envelope
       url: mailto:maxbit1980@gmail.com
 
-# ---------- Markdown / Realce de sintaxe ----------
 markdown: kramdown
 kramdown:
   input: GFM
@@ -63,13 +49,11 @@ kramdown:
     block:
       line_numbers: true
 
-# ---------- Plugins ----------
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
 
-# ---------- Sass ----------
 sass:
   quiet_deps: true
   silence_deprecations:
@@ -77,27 +61,9 @@ sass:
     - global-builtin
     - color-functions
 
-# ---------- Defaults ----------
-defaults:
-  - scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "post"
-      comments: false
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "page"
-
-# ---------- Exclusões ----------
 exclude:
   - Gemfile
   - Gemfile.lock
   - vendor/
   - .github/
   - README.md
-  - node_modules/
-  - .sass-cache/
-  - .jekyll-cache/

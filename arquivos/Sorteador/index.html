@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorteador Versátil Premium</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Google Fonts - Inter & Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Montserrat', 'sans-serif'],
+          },
+          colors: {
+            darkbg: '#0a0d14',
+            cardbg: 'rgba(17, 24, 39, 0.75)',
+            accentPurple: '#8b5cf6',
+            accentCyan: '#06b6d4',
+            accentEmerald: '#10b981',
+          },
+          boxShadow: {
+            'neon-purple': '0 0 20px rgba(139, 92, 246, 0.35)',
+            'neon-cyan': '0 0 20px rgba(6, 182, 212, 0.35)',
+            'neon-emerald': '0 0 20px rgba(16, 185, 129, 0.35)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080b11;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: #f3f4f6;
+    }
+
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glass-input {
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.2s ease;
+    }
+
+    .glass-input:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+      outline: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.6);
+    }
+
+    .animate-pulse-subtle {
+      animation: pulseSubtle 3s infinite ease-in-out;
+    }
+
+    @keyframes pulseSubtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.95; transform: scale(1.008); }
+    }
+
+    /* ========== ESTILOS PIX ========== */
+    .donate-btn {
+      background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 30px;
+      padding: 8px 18px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #3b1e7a, 0 0 18px rgba(139, 92, 246, 0.45);
+      transition: all 0.15s;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .donate-btn:hover {
+      box-shadow: 0 3px 0 #3b1e7a, 0 0 26px rgba(6, 182, 212, 0.6);
+      transform: translateY(-1px);
+    }
+    .donate-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #3b1e7a, 0 0 18px rgba(139, 92, 246, 0.7);
+    }
+
+    .pix-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    .pix-modal-overlay.active { display: flex; }
+
+    .pix-modal-box {
+      background: linear-gradient(160deg, #0f172a, #1a0b2e);
+      border: 2px solid #8b5cf6;
+      border-radius: 28px;
+      padding: 26px 22px;
+      max-width: 400px;
+      width: 100%;
+      position: relative;
+      animation: popIn 0.3s ease;
+      box-shadow:
+        0 0 50px rgba(139, 92, 246, 0.55),
+        0 0 30px rgba(6, 182, 212, 0.3) inset;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .pix-close {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      font-size: 1.15rem;
+      color: #94a3b8;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      z-index: 2;
+    }
+    .pix-close:hover {
+      color: #f472b6;
+      background: rgba(244, 114, 182, 0.15);
+      transform: rotate(90deg);
+    }
+
+    .donation-value-wrapper {
+      background: #0a0f1e;
+      border: 1.5px solid #06b6d4;
+      border-radius: 18px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      text-align: center;
+      box-shadow: 0 0 18px rgba(6, 182, 212, 0.2) inset;
+    }
+
+    .donation-value-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #22d3ee;
+      margin-bottom: 10px;
+      display: block;
+      font-weight: 700;
+    }
+
+    .donation-input-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .currency-symbol {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #22d3ee;
+      text-shadow: 0 0 12px rgba(6, 182, 212, 0.7);
+    }
+
+    .donation-input {
+      background: transparent !important;
+      border: none !important;
+      font-size: 2rem !important;
+      font-weight: 700 !important;
+      color: #22d3ee !important;
+      text-align: center !important;
+      text-shadow: 0 0 12px rgba(6, 182, 212, 0.7) !important;
+      padding: 0 !important;
+      width: 130px !important;
+      outline: none !important;
+      box-shadow: none !important;
+      margin-bottom: 0 !important;
+    }
+
+    .donation-input::-webkit-outer-spin-button,
+    .donation-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .donation-input { -moz-appearance: textfield; appearance: textfield; }
+
+    .quick-values {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .quick-value-btn {
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid #06b6d4;
+      color: #22d3ee;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .quick-value-btn:hover,
+    .quick-value-btn.active {
+      background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(139, 92, 246, 0.6);
+      border-color: #8b5cf6;
+    }
+    .quick-value-btn:active { transform: scale(0.95); }
+
+    .min-hint {
+      font-size: 0.68rem;
+      color: #64748b;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .pix-key-box {
+      background: #0a0f1e;
+      border: 1.5px dashed #8b5cf6;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .pix-key-box small {
+      font-size: 0.68rem;
+      color: #94a3b8;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .pix-code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.68rem;
+      color: #22d3ee;
+      word-break: break-all;
+      line-height: 1.4;
+      max-height: 90px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .pix-btn-primary {
+      background: linear-gradient(145deg, #8b5cf6, #06b6d4);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 40px;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      width: 100%;
+      box-shadow: 0 4px 0 #3b1e7a, 0 0 22px rgba(139, 92, 246, 0.5);
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .pix-btn-primary:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #3b1e7a, 0 0 22px rgba(139, 92, 246, 0.7);
+    }
+
+    .pix-btn-ghost {
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 40px;
+      padding: 10px 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.15s;
+    }
+    .pix-btn-ghost:hover { color: #e2e8f0; border-color: rgba(255, 255, 255, 0.4); }
+    .pix-btn-ghost:active { transform: scale(0.97); }
+
+    .pix-success {
+      background: linear-gradient(145deg, #10b981, #059669) !important;
+      color: #00291a !important;
+      border-color: #6ee7b7 !important;
+      box-shadow: 0 4px 0 #064e3b, 0 0 24px #10b981 !important;
+    }
+
+    .pix-error {
+      border-color: #ff3b6f !important;
+      color: #ff3b6f !important;
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased">
+
+  <header class="w-full border-b border-white/10 glass-panel sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-cyan-500 to-emerald-400 flex items-center justify-center text-white shadow-neon-purple font-black text-xl">
+          <i class="fa-solid font-bold fa-dice"></i>
+        </div>
+        <div>
+          <h1 class="font-display font-extrabold text-xl md:text-2xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-cyan-300 to-emerald-400">
+            SORTEADOR <span class="text-xs px-2 py-0.5 rounded-full bg-purple-900/50 text-purple-300 border border-purple-500/30 font-normal">PRO</span>
+          </h1>
+          <p class="text-xs text-gray-400">Sorteios Rápidos, Transparentes & Com Prêmios Customizáveis</p>
+        </div>
+      </div>
+
+      <nav class="flex p-1 rounded-xl bg-slate-900/80 border border-white/10 text-sm w-full md:w-auto">
+        <button id="tab-names" onclick="switchTab('names')" class="tab-btn flex-1 md:flex-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all duration-300 bg-purple-600 text-white shadow-neon-purple">
+          <i class="fa-solid fa-users"></i>
+          <span>Nomes</span>
+        </button>
+        <button id="tab-numbers" onclick="switchTab('numbers')" class="tab-btn flex-1 md:flex-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all duration-300 text-gray-400 hover:text-white">
+          <i class="fa-solid fa-arrow-1-9"></i>
+          <span>Números</span>
+        </button>
+        <button id="tab-combined" onclick="switchTab('combined')" class="tab-btn flex-1 md:flex-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all duration-300 text-gray-400 hover:text-white">
+          <i class="fa-solid fa-cubes"></i>
+          <span>Combinado (1-100)</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 mt-8 w-full flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
+    
+    <section class="lg:col-span-2 space-y-6">
+
+      <!-- PRIZE CONFIGURATION CARD (SHARED FOR ALL MODES) -->
+      <div class="glass-panel rounded-2xl p-5 border border-amber-500/30 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-display font-bold text-amber-300 flex items-center gap-2">
+            <i class="fa-solid fa-gift text-amber-400"></i> Informações do Prêmio/Objeto (Opcional)
+          </h3>
+          <span class="text-[10px] text-gray-400 bg-amber-950/40 px-2.5 py-0.5 rounded-full border border-amber-800/40">Exibido no resultado</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">
+              Nome do Item / Prêmio:
+            </label>
+            <input type="text" id="prize-name-input" placeholder="Ex: iPhone 15, Vale Compras, Cesta de Doces" class="w-full glass-input rounded-xl px-3.5 py-2 text-sm text-white placeholder-gray-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1">
+              Foto do Prêmio:
+            </label>
+            <div class="flex items-center gap-2">
+              <label class="flex-1 cursor-pointer bg-slate-900/90 hover:bg-slate-800 text-gray-300 text-xs px-3 py-2 rounded-xl border border-white/10 flex items-center justify-center gap-2 transition-colors">
+                <i class="fa-solid fa-upload text-amber-400"></i>
+                <span id="prize-file-label" class="truncate">Carregar Foto</span>
+                <input type="file" id="prize-image-input" accept="image/*" onchange="handlePrizeImageUpload(event)" class="hidden">
+              </label>
+              <button id="prize-img-remove-btn" onclick="removePrizeImage()" class="hidden text-xs text-red-400 hover:text-red-300 p-2 bg-red-950/40 rounded-xl border border-red-800/30" title="Remover Imagem">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview Thumbnail -->
+        <div id="prize-preview-container" class="hidden mt-3 pt-3 border-t border-white/10 flex items-center gap-3">
+          <img id="prize-preview-img" src="" alt="Foto do Prêmio" class="w-12 h-12 object-cover rounded-lg border border-amber-500/50 shadow-md">
+          <div class="text-xs">
+            <span class="text-amber-300 font-semibold block">Imagem Anexada</span>
+            <span class="text-gray-400 text-[11px]">Será exibida na animação e salva no histórico.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODE 1: NOMES -->
+      <div id="panel-names" class="tab-panel glass-panel rounded-2xl p-6 shadow-2xl relative overflow-hidden border border-purple-500/20">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-display font-bold text-purple-300 flex items-center gap-2">
+            <i class="fa-solid fa-user-tag text-purple-400"></i> Sorteio por Nomes
+          </h2>
+          <span class="text-xs text-gray-400 bg-purple-950/60 px-3 py-1 rounded-full border border-purple-800/40">Modo Lista</span>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+              Lista de Participantes (Um por linha ou separados por vírgula):
+            </label>
+            <textarea id="names-input" rows="5" class="w-full glass-input rounded-xl p-3.5 text-sm text-gray-100 placeholder-gray-500 focus:ring-1 focus:ring-purple-500" placeholder="Ana Silva&#10;Carlos Eduardo&#10;Mariana Costa&#10;Lucas Pereira&#10;Juliana Rocha"></textarea>
+            <div class="flex justify-between items-center text-xs text-gray-400 mt-1.5 px-1">
+              <span id="names-count">0 participantes detectados</span>
+              <button onclick="clearNamesInput()" class="hover:text-purple-400 transition-colors"><i class="fa-solid fa-trash-can mr-1"></i> Limpar</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                Quantidade de Ganhadores:
+              </label>
+              <input type="number" id="names-qty" min="1" value="1" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                Regra de Repetição:
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer pt-2">
+                <input type="checkbox" id="names-unique" checked class="w-4 h-4 rounded accent-purple-500 bg-gray-900 border-gray-700">
+                <span>Não repetir nomes no mesmo sorteio</span>
+              </label>
+            </div>
+          </div>
+
+          <button onclick="drawNames()" class="w-full mt-4 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-lg shadow-neon-purple hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Realizar Sorteio de Nomes</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MODE 2: NÚMEROS -->
+      <div id="panel-numbers" class="tab-panel glass-panel rounded-2xl p-6 shadow-2xl relative overflow-hidden border border-cyan-500/20 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-display font-bold text-cyan-300 flex items-center gap-2">
+            <i class="fa-solid fa-arrow-1-9 text-cyan-400"></i> Sorteio por Números
+          </h2>
+          <span class="text-xs text-gray-400 bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-800/40">Faixa Personalizável</span>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                Número Mínimo:
+              </label>
+              <input type="number" id="num-min" value="1" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                Número Máximo:
+              </label>
+              <input type="number" id="num-max" value="100" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                Quantidade de Números:
+              </label>
+              <input type="number" id="num-qty" min="1" value="1" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white">
+            </div>
+            <div class="flex items-end pb-2">
+              <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                <input type="checkbox" id="num-no-repeat" checked class="w-4 h-4 rounded accent-cyan-500 bg-gray-900 border-gray-700">
+                <span>Não permitir números repetidos</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <span class="text-xs text-gray-400 block mb-2">Atalhos rápidos:</span>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="setNumberRange(1, 10)" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-cyan-900/50 text-xs text-cyan-300 border border-cyan-500/30 transition-colors">1 a 10</button>
+              <button onclick="setNumberRange(1, 50)" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-cyan-900/50 text-xs text-cyan-300 border border-cyan-500/30 transition-colors">1 a 50</button>
+              <button onclick="setNumberRange(1, 100)" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-cyan-900/50 text-xs text-cyan-300 border border-cyan-500/30 transition-colors">1 a 100</button>
+              <button onclick="setNumberRange(1, 1000)" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-cyan-900/50 text-xs text-cyan-300 border border-cyan-500/30 transition-colors">1 a 1000</button>
+            </div>
+          </div>
+
+          <button onclick="drawNumbers()" class="w-full mt-4 py-4 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-bold text-lg shadow-neon-cyan hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3">
+            <i class="fa-solid fa-hashtag"></i>
+            <span>Sortear Números Agora</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MODE 3: COMBINADO (NOMES + NÚMEROS DIVIDIDOS) -->
+      <div id="panel-combined" class="tab-panel glass-panel rounded-2xl p-6 shadow-2xl relative overflow-hidden border border-emerald-500/20 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-display font-bold text-emerald-300 flex items-center gap-2">
+            <i class="fa-solid fa-list-ol text-emerald-400"></i> Sorteio Combinado (Cartela 1-100)
+          </h2>
+          <span class="text-xs text-gray-400 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40">Divisão Igualitária</span>
+        </div>
+
+        <p class="text-xs text-gray-300 mb-4 bg-slate-900/80 p-3 rounded-xl border border-white/5 leading-relaxed">
+          <i class="fa-solid fa-circle-info text-emerald-400 mr-1"></i>
+          Cadastre os participantes. O sistema irá dividir <strong>igualmente</strong> a quantidade de números especificada entre todos os participantes.
+        </p>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+              <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                Lista de Participantes:
+              </label>
+              <textarea id="comb-names-input" rows="4" class="w-full glass-input rounded-xl p-3 text-sm text-gray-100 placeholder-gray-500 focus:ring-1 focus:ring-emerald-500" placeholder="Gabriel&#10;Fernanda&#10;Mateus&#10;Beatriz"></textarea>
+            </div>
+            <div class="flex flex-col justify-between space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                  Total de Números (ex: 100):
+                </label>
+                <input type="number" id="comb-total-numbers" value="100" min="2" max="500" class="w-full glass-input rounded-xl px-3 py-2 text-sm text-white">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-1.5">
+                  Modo de Distribuição:
+                </label>
+                <select id="comb-distribution-mode" class="w-full glass-input rounded-xl px-3 py-2 text-sm text-white bg-slate-900">
+                  <option value="random">Aleatória (Embaralhada)</option>
+                  <option value="sequential">Sequencial (Blocos)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3">
+            <button onclick="generateCombinedGrid()" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 font-semibold text-sm transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-table-cells"></i>
+              <span>1. Gerar Distribuição</span>
+            </button>
+            <button onclick="drawCombinedWinner()" id="btn-draw-combined" disabled class="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 opacity-50 cursor-not-allowed text-white font-bold text-sm shadow-neon-emerald transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-trophy"></i>
+              <span>2. Sortear Bilhete Premiado</span>
+            </button>
+          </div>
+
+          <!-- Participant Badges Summary -->
+          <div id="comb-summary-container" class="hidden pt-2 border-t border-white/10">
+            <span class="text-xs font-semibold text-gray-400 block mb-2 uppercase">Atribuição por Participante:</span>
+            <div id="comb-participants-list" class="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-1"></div>
+          </div>
+
+          <!-- Interactive Grid Visualizer -->
+          <div id="comb-grid-container" class="hidden pt-2 border-t border-white/10">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-semibold text-gray-400 uppercase">Cartela de Números (<span id="comb-grid-count">0</span>):</span>
+              <span class="text-[10px] text-gray-500">Passe o mouse ou toque para ver o dono do número</span>
+            </div>
+            <div id="comb-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-1.5 max-h-60 overflow-y-auto p-2 bg-slate-950/60 rounded-xl border border-white/5"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <aside class="space-y-6">
+      
+      <!-- Last Winner Quick Showcase Box -->
+      <div class="glass-panel rounded-2xl p-6 text-center border border-white/10 relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 text-white/5 text-8xl font-black">
+          <i class="fa-solid fa-award"></i>
+        </div>
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Último Resultado</span>
+        <div id="last-winner-display" class="py-2">
+          <p class="text-gray-500 italic text-sm">Nenhum sorteio realizado ainda.</p>
+        </div>
+      </div>
+
+      <!-- History Panel with LocalStorage Persistence -->
+      <div class="glass-panel rounded-2xl p-6 border border-white/10 flex flex-col h-[520px]">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+          <h3 class="font-display font-bold text-gray-200 flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Histórico Salvo
+          </h3>
+          <div class="flex gap-2">
+            <button onclick="copyHistory()" class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-gray-300 transition-colors" title="Copiar Histórico">
+              <i class="fa-solid fa-copy"></i>
+            </button>
+            <button onclick="clearHistory()" class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-red-900/50 text-red-400 transition-colors" title="Excluir Todos os Sorteios">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="history-list" class="flex-grow overflow-y-auto space-y-3 pr-1">
+          <div id="history-empty" class="text-center py-16 text-gray-500 text-xs">
+            <i class="fa-solid fa-box-open text-3xl mb-2 block opacity-40"></i>
+            Os sorteios salvos em seu navegador aparecerão aqui.
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <div id="draw-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 border border-purple-500/40 shadow-2xl text-center relative overflow-hidden animate-pulse-subtle">
+      
+      <div class="absolute -top-20 -left-20 w-40 h-40 bg-purple-600/30 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-cyan-600/30 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- SUSPENSE STATE -->
+      <div id="modal-suspense-state" class="py-6">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-900/40 border border-purple-500/50 flex items-center justify-center text-purple-400 text-2xl animate-spin">
+          <i class="fa-solid fa-spinner"></i>
+        </div>
+        <h3 id="modal-title" class="font-display text-lg font-semibold text-gray-300 mb-1">SORTEANDO...</h3>
+        
+        <!-- Prize info in suspense modal -->
+        <div id="suspense-prize-badge" class="hidden my-2 py-1 px-3 bg-amber-950/50 border border-amber-500/30 rounded-full inline-flex items-center gap-2 text-xs text-amber-300">
+          <i class="fa-solid fa-gift"></i>
+          <span id="suspense-prize-text">Prêmio</span>
+        </div>
+
+        <div class="h-24 bg-slate-950 rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden shadow-inner my-4 relative">
+          <div class="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-slate-950 to-transparent z-10 pointer-events-none"></div>
+          <div class="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-slate-950 to-transparent z-10 pointer-events-none"></div>
+          <div id="roulette-ticker" class="font-display text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-300 to-emerald-300 px-4">
+            ...
+          </div>
+        </div>
+      </div>
+
+      <!-- WINNER REVEAL STATE -->
+      <div id="modal-winner-state" class="hidden py-2">
+        <div class="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center text-slate-950 text-4xl shadow-lg shadow-yellow-500/20">
+          <i class="fa-solid fa-trophy"></i>
+        </div>
+        <span class="text-xs font-extrabold uppercase tracking-widest text-amber-400 block mb-1">Temos o(s) Campeão(ões)!</span>
+        
+        <!-- Winner Prize Display -->
+        <div id="modal-prize-card" class="hidden my-3 p-3 bg-amber-950/40 border border-amber-500/30 rounded-2xl flex items-center justify-center gap-3">
+          <img id="modal-prize-img" src="" alt="Prêmio" class="hidden w-12 h-12 object-cover rounded-xl border border-amber-400/50">
+          <div class="text-left">
+            <span class="text-[10px] text-amber-400 uppercase font-bold block">Objeto / Prêmio Sorteado:</span>
+            <span id="modal-prize-title" class="font-bold text-white text-sm"></span>
+          </div>
+        </div>
+
+        <div id="winner-output-container" class="my-3 max-h-52 overflow-y-auto px-1"></div>
+
+        <button onclick="closeWinnerModal()" class="w-full mt-3 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold text-base shadow-lg transition-all">
+          Incrível! Fechar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========== MODAL PIX (DOAÇÃO) ========== -->
+  <div id="pixModal" class="pix-modal-overlay">
+    <div class="pix-modal-box">
+      <span class="pix-close" id="pixCloseBtn" title="Fechar">✕</span>
+      <h3 class="text-cyan-300 text-center font-display font-bold text-lg mb-3" style="text-shadow: 0 0 12px rgba(6, 182, 212, 0.7);">
+        💚 APOIE O DESENVOLVEDOR
+      </h3>
+      <p class="text-sm text-gray-300 text-center leading-relaxed mb-4">
+        Se este app foi útil pra você,<br>
+        considere uma doação via <strong class="text-purple-300" style="text-shadow: 0 0 10px rgba(139, 92, 246, 0.7);">PIX</strong>.<br>
+        Escolha o valor — <strong class="text-purple-300">a partir de R$ 1,00</strong>. 🙏
+      </p>
+
+      <div class="donation-value-wrapper">
+        <span class="donation-value-label">💰 Escolha o valor da doação</span>
+        <div class="donation-input-wrapper">
+          <span class="currency-symbol">R$</span>
+          <input type="number" class="donation-input" id="donationAmount" min="1" step="1" value="3">
+        </div>
+        <div class="quick-values">
+          <button class="quick-value-btn" data-value="1">R$ 1</button>
+          <button class="quick-value-btn" data-value="2">R$ 2</button>
+          <button class="quick-value-btn active" data-value="3">R$ 3</button>
+          <button class="quick-value-btn" data-value="5">R$ 5</button>
+          <button class="quick-value-btn" data-value="10">R$ 10</button>
+          <button class="quick-value-btn" data-value="20">R$ 20</button>
+        </div>
+        <div class="min-hint">Valor mínimo: R$ 1,00</div>
+      </div>
+
+      <div class="pix-key-box">
+        <small>🔑 CÓDIGO PIX (COPIA E COLA)</small>
+        <div class="pix-code" id="pixCodeDisplay">Gerando código PIX...</div>
+      </div>
+
+      <button class="pix-btn-primary" id="copyPixBtn">📋 COPIAR CÓDIGO PIX</button>
+      <button class="pix-btn-ghost" id="closePixBtn">AGORA NÃO</button>
+    </div>
+  </div>
+
+  <footer class="w-full border-t border-white/10 glass-panel py-6 text-center text-xs text-gray-400 mt-auto">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-dice text-purple-400"></i>
+        <span class="font-semibold text-gray-300">Sorteador Versátil PRO</span>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <p class="font-medium text-gray-300">
+          Desenvolvido com <i class="fa-solid fa-heart text-red-500 animate-pulse mx-0.5"></i> por <span class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Paulo César</span>
+        </p>
+        <button class="donate-btn" id="openPixBtn">
+          <i class="fa-solid fa-mug-hot"></i>
+          Apoiar com PIX (a partir de R$ 1,00)
+        </button>
+      </div>
+      <div class="text-gray-500 text-[11px]">
+        Armazenamento seguro via LocalStorage
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // --- APP STATE & LOCALSTORAGE PERSISTENCE ---
+    const STORAGE_KEY = 'sorteador_pro_history_v2';
+    let historyData = loadHistoryFromStorage();
+    let activeTab = 'names';
+    let prizeImageData = null; // Base64 string for uploaded prize image
+    
+    let combinedAssignments = [];
+    let combinedParticipants = [];
+    let nameColorMap = {};
+
+    const participantColors = [
+      { bg: 'bg-purple-900/40', text: 'text-purple-300', border: 'border-purple-500/30' },
+      { bg: 'bg-cyan-900/40', text: 'text-cyan-300', border: 'border-cyan-500/30' },
+      { bg: 'bg-emerald-900/40', text: 'text-emerald-300', border: 'border-emerald-500/30' },
+      { bg: 'bg-amber-900/40', text: 'text-amber-300', border: 'border-amber-500/30' },
+      { bg: 'bg-rose-900/40', text: 'text-rose-300', border: 'border-rose-500/30' },
+      { bg: 'bg-indigo-900/40', text: 'text-indigo-300', border: 'border-indigo-500/30' },
+      { bg: 'bg-teal-900/40', text: 'text-teal-300', border: 'border-teal-500/30' },
+      { bg: 'bg-fuchsia-900/40', text: 'text-fuchsia-300', border: 'border-fuchsia-500/30' },
+    ];
+
+    // ============================================================
+    // ⚙️ CONFIGURAÇÃO PIX
+    // ============================================================
+    const PIX_KEY = 'bf60e9ea-dbd3-43f1-8a64-7dbdb5191a71';
+    const PIX_NAME = 'PAULO CESAR';
+    const PIX_CITY = 'SAO PAULO';
+    const MIN_DONATION = 1.00;
+    const DEFAULT_DONATION = 3.00;
+
+    function crc16(str) {
+      let crc = 0xFFFF;
+      for (let i = 0; i < str.length; i++) {
+        crc ^= str.charCodeAt(i) << 8;
+        for (let j = 0; j < 8; j++) {
+          crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+          crc &= 0xFFFF;
+        }
+      }
+      return crc.toString(16).toUpperCase().padStart(4, '0');
+    }
+
+    function buildPixPayload(key, name, city, amount) {
+      const f = (id, val) => id + String(val.length).padStart(2, '0') + val;
+      let p = '';
+      p += f('00', '01');
+      p += f('26', f('00', 'BR.GOV.BCB.PIX') + f('01', key));
+      p += f('52', '0000');
+      p += f('53', '986');
+      p += f('54', amount.toFixed(2));
+      p += f('58', 'BR');
+      p += f('59', name.substring(0, 25));
+      p += f('60', city.substring(0, 15));
+      p += f('62', f('05', '***'));
+      p += '6304';
+      return p + crc16(p);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const namesInput = document.getElementById('names-input');
+      if (namesInput) {
+        namesInput.addEventListener('input', updateNamesCount);
+        updateNamesCount();
+      }
+
+      renderHistory();
+      if (historyData.length > 0) {
+        const last = historyData[0];
+        updateLastWinnerDisplay(last.mode, last.winners, last.prizeName, last.prizeImage);
+      }
+
+      // Inicializa PIX
+      initPix();
+    });
+
+    // ============================================================
+    // 💚 PIX — LÓGICA COMPLETA
+    // ============================================================
+    function initPix() {
+      const pixModal = document.getElementById('pixModal');
+      const pixCodeDisplay = document.getElementById('pixCodeDisplay');
+      const copyPixBtn = document.getElementById('copyPixBtn');
+      const closePixBtn = document.getElementById('closePixBtn');
+      const pixCloseBtn = document.getElementById('pixCloseBtn');
+      const openPixBtn = document.getElementById('openPixBtn');
+      const donationAmount = document.getElementById('donationAmount');
+      const quickValueBtns = document.querySelectorAll('.quick-value-btn');
+
+      function getValidAmount() {
+        let v = parseFloat(donationAmount.value);
+        if (isNaN(v) || v < MIN_DONATION) v = MIN_DONATION;
+        v = Math.round(v * 100) / 100;
+        return v;
+      }
+
+      function refreshPixCode() {
+        const amount = getValidAmount();
+        const code = buildPixPayload(PIX_KEY, PIX_NAME, PIX_CITY, amount);
+        pixCodeDisplay.textContent = code;
+
+        quickValueBtns.forEach(b => {
+          const val = parseFloat(b.dataset.value);
+          b.classList.toggle('active', val === amount);
+        });
+        return code;
+      }
+
+      donationAmount.addEventListener('input', () => {
+        donationAmount.classList.remove('pix-error');
+        refreshPixCode();
+      });
+
+      donationAmount.addEventListener('blur', () => {
+        const v = parseFloat(donationAmount.value);
+        if (isNaN(v) || v < MIN_DONATION) {
+          donationAmount.value = MIN_DONATION.toFixed(2);
+          donationAmount.classList.add('pix-error');
+          setTimeout(() => donationAmount.classList.remove('pix-error'), 900);
+        } else {
+          donationAmount.value = v.toFixed(2);
+        }
+        refreshPixCode();
+      });
+
+      quickValueBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const val = parseFloat(btn.dataset.value);
+          donationAmount.value = val;
+          donationAmount.classList.remove('pix-error');
+          refreshPixCode();
+        });
+      });
+
+      function openPixModal() {
+        copyPixBtn.textContent = '📋 COPIAR CÓDIGO PIX';
+        copyPixBtn.classList.remove('pix-success');
+        refreshPixCode();
+        pixModal.classList.add('active');
+      }
+
+      function closePixModal() { pixModal.classList.remove('active'); }
+
+      openPixBtn.addEventListener('click', openPixModal);
+      closePixBtn.addEventListener('click', closePixModal);
+      pixCloseBtn.addEventListener('click', closePixModal);
+      pixModal.addEventListener('click', (e) => {
+        if (e.target === pixModal) closePixModal();
+      });
+
+      copyPixBtn.addEventListener('click', async () => {
+        const v = parseFloat(donationAmount.value);
+        if (isNaN(v) || v < MIN_DONATION) {
+          donationAmount.classList.add('pix-error');
+          alert('⚠️ O valor mínimo para doação é R$ 1,00');
+          return;
+        }
+
+        const code = refreshPixCode();
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(code);
+          } else {
+            const ta = document.createElement('textarea');
+            ta.value = code;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          }
+
+          copyPixBtn.textContent = '✅ COPIADO! OBRIGADO PELO APOIO!';
+          copyPixBtn.classList.add('pix-success');
+
+          setTimeout(() => closePixModal(), 1500);
+        } catch (err) {
+          alert('Não foi possível copiar automaticamente.\nCopie manualmente:\n\n' + code);
+        }
+      });
+
+      refreshPixCode();
+    }
+
+    function loadHistoryFromStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+      } catch (e) {
+        console.error('Erro ao carregar histórico do localStorage', e);
+        return [];
+      }
+    }
+
+    function saveHistoryToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(historyData));
+      } catch (e) {
+        console.error('Erro ao salvar histórico no localStorage', e);
+      }
+    }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      const tabs = ['names', 'numbers', 'combined'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        const panel = document.getElementById(`panel-${t}`);
+        
+        if (t === tab) {
+          btn.className = `tab-btn flex-1 md:flex-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all duration-300 text-white ${
+            t === 'names' ? 'bg-purple-600 shadow-neon-purple' : 
+            t === 'numbers' ? 'bg-cyan-600 shadow-neon-cyan' : 'bg-emerald-600 shadow-neon-emerald'
+          }`;
+          panel.classList.remove('hidden');
+        } else {
+          btn.className = 'tab-btn flex-1 md:flex-none px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 transition-all duration-300 text-gray-400 hover:text-white';
+          panel.classList.add('hidden');
+        }
+      });
+    }
+
+    // --- PRIZE IMAGE & NAME HANDLING ---
+    function handlePrizeImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (file.size > 3 * 1024 * 1024) {
+        alert('Por favor, selecione uma imagem com menos de 3MB.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        prizeImageData = e.target.result;
+        document.getElementById('prize-preview-img').src = prizeImageData;
+        document.getElementById('prize-preview-container').classList.remove('hidden');
+        document.getElementById('prize-file-label').textContent = file.name;
+        document.getElementById('prize-img-remove-btn').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removePrizeImage() {
+      prizeImageData = null;
+      document.getElementById('prize-image-input').value = '';
+      document.getElementById('prize-file-label').textContent = 'Carregar Foto';
+      document.getElementById('prize-preview-container').classList.add('hidden');
+      document.getElementById('prize-img-remove-btn').classList.add('hidden');
+    }
+
+    function getPrizeDetails() {
+      const nameInput = document.getElementById('prize-name-input').value.trim();
+      return {
+        prizeName: nameInput || null,
+        prizeImage: prizeImageData || null
+      };
+    }
+
+    // --- MODE 1: NOMES ---
+    function getNamesList() {
+      const raw = document.getElementById('names-input').value;
+      return raw.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
+    }
+
+    function updateNamesCount() {
+      const list = getNamesList();
+      document.getElementById('names-count').textContent = `${list.length} participante(s) detectado(s)`;
+    }
+
+    function clearNamesInput() {
+      document.getElementById('names-input').value = '';
+      updateNamesCount();
+    }
+
+    function drawNames() {
+      const list = getNamesList();
+      if (list.length === 0) {
+        alert('Por favor, insira pelo menos 1 nome para realizar o sorteio.');
+        return;
+      }
+
+      const qtyInput = parseInt(document.getElementById('names-qty').value) || 1;
+      const noRepeat = document.getElementById('names-unique').checked;
+
+      if (noRepeat && qtyInput > list.length) {
+        alert(`A quantidade de ganhadores (${qtyInput}) não pode ser maior que o número total de participantes (${list.length}) quando "não repetir" estiver marcado.`);
+        return;
+      }
+
+      let pool = [...list];
+      let winners = [];
+
+      for (let i = 0; i < qtyInput; i++) {
+        if (pool.length === 0) break;
+        const randomIndex = Math.floor(Math.random() * pool.length);
+        const selected = pool[randomIndex];
+        winners.push(selected);
+
+        if (noRepeat) {
+          pool.splice(randomIndex, 1);
+        }
+      }
+
+      const prize = getPrizeDetails();
+      startRouletteAnimation(pool.length > 0 ? pool : list, winners, 'Nomes', prize);
+    }
+
+    // --- MODE 2: NÚMEROS ---
+    function setNumberRange(min, max) {
+      document.getElementById('num-min').value = min;
+      document.getElementById('num-max').value = max;
+    }
+
+    function drawNumbers() {
+      const min = parseInt(document.getElementById('num-min').value);
+      const max = parseInt(document.getElementById('num-max').value);
+      const qty = parseInt(document.getElementById('num-qty').value) || 1;
+      const noRepeat = document.getElementById('num-no-repeat').checked;
+
+      if (isNaN(min) || isNaN(max)) {
+        alert('Por favor, defina um intervalo numérico válido.');
+        return;
+      }
+
+      if (min >= max) {
+        alert('O número MÍNIMO deve ser menor que o número MÁXIMO.');
+        return;
+      }
+
+      const totalAvailable = max - min + 1;
+      if (noRepeat && qty > totalAvailable) {
+        alert(`Não é possível sortear ${qty} números sem repetição num intervalo de apenas ${totalAvailable} números.`);
+        return;
+      }
+
+      let winners = [];
+      if (noRepeat) {
+        let pool = [];
+        for (let i = min; i <= max; i++) pool.push(i);
+        for (let i = 0; i < qty; i++) {
+          const randIdx = Math.floor(Math.random() * pool.length);
+          winners.push(pool[randIdx]);
+          pool.splice(randIdx, 1);
+        }
+      } else {
+        for (let i = 0; i < qty; i++) {
+          const num = Math.floor(Math.random() * (max - min + 1)) + min;
+          winners.push(num);
+        }
+      }
+
+      let dummyPool = [];
+      for (let i = 0; i < 20; i++) {
+        dummyPool.push(Math.floor(Math.random() * (max - min + 1)) + min);
+      }
+
+      const prize = getPrizeDetails();
+      startRouletteAnimation(dummyPool, winners.map(n => `Nº ${n}`), 'Números', prize);
+    }
+
+    // --- MODE 3: COMBINADO (NOMES + NÚMEROS) ---
+    function generateCombinedGrid() {
+      const rawNames = document.getElementById('comb-names-input').value;
+      const participants = rawNames.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
+      const totalNums = parseInt(document.getElementById('comb-total-numbers').value) || 100;
+      const mode = document.getElementById('comb-distribution-mode').value;
+
+      if (participants.length === 0) {
+        alert('Insira pelo menos 1 participante na lista.');
+        return;
+      }
+
+      if (totalNums < participants.length) {
+        alert(`O total de números (${totalNums}) precisa ser maior ou igual ao número de participantes (${participants.length}).`);
+        return;
+      }
+
+      combinedParticipants = participants;
+      combinedAssignments = [];
+
+      let numberPool = [];
+      for (let i = 1; i <= totalNums; i++) {
+        numberPool.push(i);
+      }
+
+      if (mode === 'random') {
+        for (let i = numberPool.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [numberPool[i], numberPool[j]] = [numberPool[j], numberPool[i]];
+        }
+      }
+
+      participants.forEach((name, idx) => {
+        const color = participantColors[idx % participantColors.length];
+        nameColorMap[name] = color;
+      });
+
+      let pIdx = 0;
+      numberPool.forEach(num => {
+        const owner = participants[pIdx % participants.length];
+        combinedAssignments.push({
+          number: num,
+          owner: owner
+        });
+        pIdx++;
+      });
+
+      combinedAssignments.sort((a, b) => a.number - b.number);
+      renderCombinedVisuals();
+
+      const btn = document.getElementById('btn-draw-combined');
+      btn.disabled = false;
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    function renderCombinedVisuals() {
+      const grid = document.getElementById('comb-grid');
+      const participantsList = document.getElementById('comb-participants-list');
+      const gridCount = document.getElementById('comb-grid-count');
+      
+      grid.innerHTML = '';
+      participantsList.innerHTML = '';
+      gridCount.textContent = combinedAssignments.length;
+
+      combinedParticipants.forEach(name => {
+        const myNums = combinedAssignments.filter(a => a.owner === name).map(a => a.number);
+        const color = nameColorMap[name] || participantColors[0];
+
+        const pBadge = document.createElement('div');
+        pBadge.className = `p-2 rounded-xl text-xs border ${color.bg} ${color.border} ${color.text} flex flex-col justify-between min-w-[130px]`;
+        pBadge.innerHTML = `
+          <div class="font-bold flex justify-between items-center mb-1">
+            <span>${escapeHtml(name)}</span>
+            <span class="bg-black/30 px-1.5 py-0.5 rounded text-[10px]">${myNums.length} nºs</span>
+          </div>
+          <div class="text-[10px] opacity-80 truncate" title="${myNums.join(', ')}">
+            ${myNums.join(', ')}
+          </div>
+        `;
+        participantsList.appendChild(pBadge);
+      });
+
+      combinedAssignments.forEach(item => {
+        const color = nameColorMap[item.owner] || participantColors[0];
+        const tile = document.createElement('div');
+        tile.className = `p-1.5 rounded-lg text-center text-xs font-semibold border ${color.bg} ${color.border} ${color.text} hover:scale-110 transition-transform cursor-pointer relative group`;
+        tile.innerHTML = `
+          <span>${item.number}</span>
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-slate-900 text-white text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-20 border border-white/10">
+            Nº ${item.number}: ${escapeHtml(item.owner)}
+          </div>
+        `;
+        grid.appendChild(tile);
+      });
+
+      document.getElementById('comb-summary-container').classList.remove('hidden');
+      document.getElementById('comb-grid-container').classList.remove('hidden');
+    }
+
+    function drawCombinedWinner() {
+      if (combinedAssignments.length === 0) {
+        alert('Gere primeiro a distribuição de números.');
+        return;
+      }
+
+      const winningAssignment = combinedAssignments[Math.floor(Math.random() * combinedAssignments.length)];
+      const dummyPool = combinedAssignments.map(a => `Nº ${a.number} (${a.owner})`);
+      const finalResultString = `Nº ${winningAssignment.number} — ${winningAssignment.owner}`;
+
+      const prize = getPrizeDetails();
+      startRouletteAnimation(dummyPool, [finalResultString], 'Combinado (1-100)', prize);
+    }
+
+    // --- ANIMATION & REVEAL MODAL ---
+    let rouletteInterval = null;
+
+    function startRouletteAnimation(tickerPool, winnersArray, modeTitle, prizeDetails) {
+      const modal = document.getElementById('draw-modal');
+      const suspenseState = document.getElementById('modal-suspense-state');
+      const winnerState = document.getElementById('modal-winner-state');
+      const ticker = document.getElementById('roulette-ticker');
+      const modalTitle = document.getElementById('modal-title');
+      const suspensePrizeBadge = document.getElementById('suspense-prize-badge');
+      const suspensePrizeText = document.getElementById('suspense-prize-text');
+
+      modalTitle.textContent = `SORTEANDO (${modeTitle.toUpperCase()})...`;
+
+      if (prizeDetails.prizeName) {
+        suspensePrizeText.textContent = `Prêmio: ${prizeDetails.prizeName}`;
+        suspensePrizeBadge.classList.remove('hidden');
+      } else {
+        suspensePrizeBadge.classList.add('hidden');
+      }
+
+      suspenseState.classList.remove('hidden');
+      winnerState.classList.add('hidden');
+      modal.classList.remove('hidden');
+
+      let speed = 50;
+      let currentIdx = 0;
+
+      rouletteInterval = setInterval(() => {
+        const sample = tickerPool[currentIdx % tickerPool.length];
+        ticker.textContent = typeof sample === 'object' ? JSON.stringify(sample) : sample;
+        currentIdx++;
+      }, speed);
+
+      setTimeout(() => {
+        clearInterval(rouletteInterval);
+        showWinnerResult(winnersArray, modeTitle, prizeDetails);
+      }, 2500);
+    }
+
+    function showWinnerResult(winnersArray, modeTitle, prizeDetails) {
+      const suspenseState = document.getElementById('modal-suspense-state');
+      const winnerState = document.getElementById('modal-winner-state');
+      const container = document.getElementById('winner-output-container');
+      const modalPrizeCard = document.getElementById('modal-prize-card');
+      const modalPrizeTitle = document.getElementById('modal-prize-title');
+      const modalPrizeImg = document.getElementById('modal-prize-img');
+
+      suspenseState.classList.add('hidden');
+      winnerState.classList.remove('hidden');
+
+      if (prizeDetails.prizeName || prizeDetails.prizeImage) {
+        modalPrizeTitle.textContent = prizeDetails.prizeName || 'Prêmio Especial';
+        if (prizeDetails.prizeImage) {
+          modalPrizeImg.src = prizeDetails.prizeImage;
+          modalPrizeImg.classList.remove('hidden');
+        } else {
+          modalPrizeImg.classList.add('hidden');
+        }
+        modalPrizeCard.classList.remove('hidden');
+      } else {
+        modalPrizeCard.classList.add('hidden');
+      }
+
+      container.innerHTML = '';
+
+      winnersArray.forEach((winner, i) => {
+        const card = document.createElement('div');
+        card.className = 'p-4 my-2 rounded-2xl bg-gradient-to-r from-purple-900/50 via-slate-900 to-cyan-900/50 border border-purple-500/40 text-center shadow-lg transform hover:scale-105 transition-all';
+        card.innerHTML = `
+          <span class="text-xs text-purple-300 font-bold uppercase tracking-wider block">Ganhador #${i + 1}</span>
+          <span class="font-display text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-amber-300 to-yellow-500">
+            ${escapeHtml(winner.toString())}
+          </span>
+        `;
+        container.appendChild(card);
+      });
+
+      triggerConfetti();
+
+      // Save to persistence
+      addToHistory(modeTitle, winnersArray, prizeDetails.prizeName, prizeDetails.prizeImage);
+
+      updateLastWinnerDisplay(modeTitle, winnersArray, prizeDetails.prizeName, prizeDetails.prizeImage);
+    }
+
+    function closeWinnerModal() {
+      document.getElementById('draw-modal').classList.add('hidden');
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+
+    // --- HISTORY MANAGEMENT & PERSISTENCE ---
+    function addToHistory(mode, winners, prizeName, prizeImage) {
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString('pt-BR');
+      const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const fullTimestamp = `${formattedDate} às ${formattedTime}`;
+
+      const historyItem = {
+        id: Date.now() + Math.random().toString(36).substring(2, 5),
+        mode,
+        winners,
+        prizeName,
+        prizeImage,
+        timestamp: fullTimestamp
+      };
+
+      historyData.unshift(historyItem);
+      saveHistoryToStorage();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const container = document.getElementById('history-list');
+      const emptyState = document.getElementById('history-empty');
+
+      if (historyData.length === 0) {
+        if (emptyState) emptyState.classList.remove('hidden');
+        container.innerHTML = '';
+        if (emptyState) container.appendChild(emptyState);
+        return;
+      }
+
+      container.innerHTML = '';
+
+      historyData.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-xl bg-slate-900/80 border border-white/5 text-xs flex flex-col gap-2 relative group hover:border-purple-500/30 transition-all';
+        
+        let prizeHtml = '';
+        if (item.prizeName || item.prizeImage) {
+          prizeHtml = `
+            <div class="flex items-center gap-2 p-1.5 bg-slate-950/60 rounded-lg border border-amber-500/20 text-[11px]">
+              ${item.prizeImage ? `<img src="${item.prizeImage}" class="w-7 h-7 object-cover rounded border border-amber-400/40">` : '<i class="fa-solid fa-gift text-amber-400 pl-1"></i>'}
+              <span class="text-amber-300 font-medium truncate">${escapeHtml(item.prizeName || 'Prêmio Especial')}</span>
+            </div>
+          `;
+        }
+
+        div.innerHTML = `
+          <div class="flex items-center justify-between text-gray-400">
+            <span class="font-bold text-purple-400">${escapeHtml(item.mode)}</span>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-gray-500"><i class="fa-regular fa-clock mr-1"></i>${escapeHtml(item.timestamp)}</span>
+              <button onclick="deleteHistoryItem('${item.id}')" class="text-gray-500 hover:text-red-400 p-1 transition-colors" title="Excluir este sorteio">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          ${prizeHtml}
+
+          <div class="font-semibold text-gray-100 text-sm">
+            <span class="text-xs text-gray-400 font-normal">Ganhador(es): </span>
+            <span class="text-emerald-300 font-bold">${item.winners.map(w => escapeHtml(w.toString())).join(', ')}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function deleteHistoryItem(id) {
+      historyData = historyData.filter(item => item.id !== id);
+      saveHistoryToStorage();
+      renderHistory();
+
+      if (historyData.length > 0) {
+        const last = historyData[0];
+        updateLastWinnerDisplay(last.mode, last.winners, last.prizeName, last.prizeImage);
+      } else {
+        document.getElementById('last-winner-display').innerHTML = '<p class="text-gray-500 italic text-sm">Nenhum sorteio realizado ainda.</p>';
+      }
+    }
+
+    function clearHistory() {
+      if (historyData.length === 0) return;
+      if (confirm('Deseja realmente excluir TODOS os sorteios salvos? Esta ação não pode ser desfeita.')) {
+        historyData = [];
+        saveHistoryToStorage();
+        renderHistory();
+        document.getElementById('last-winner-display').innerHTML = '<p class="text-gray-500 italic text-sm">Nenhum sorteio realizado ainda.</p>';
+      }
+    }
+
+    function copyHistory() {
+      if (historyData.length === 0) {
+        alert('Histórico vazio!');
+        return;
+      }
+
+      let text = "=== HISTÓRICO DE SORTEIOS ===\n\n";
+      historyData.forEach((h) => {
+        text += `[${h.timestamp}] (${h.mode})\n`;
+        if (h.prizeName) text += `Prêmio: ${h.prizeName}\n`;
+        text += `Ganhador(es): ${h.winners.join(', ')}\n`;
+        text += "-----------------------------------\n";
+      });
+
+      const tempInput = document.createElement('textarea');
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+
+      alert('Histórico copiado para a área de transferência!');
+    }
+
+    function updateLastWinnerDisplay(mode, winners, prizeName, prizeImage) {
+      const container = document.getElementById('last-winner-display');
+      
+      let prizeMarkup = '';
+      if (prizeName || prizeImage) {
+        prizeMarkup = `
+          <div class="flex items-center justify-center gap-2 my-1 text-xs text-amber-300">
+            ${prizeImage ? `<img src="${prizeImage}" class="w-6 h-6 object-cover rounded-full border border-amber-400">` : '<i class="fa-solid fa-gift"></i>'}
+            <span class="truncate max-w-[180px] font-medium">${escapeHtml(prizeName || 'Prêmio')}</span>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <span class="inline-block px-2.5 py-0.5 mb-1 rounded-full text-[10px] font-bold bg-purple-900/60 text-purple-300 border border-purple-500/30">
+          ${escapeHtml(mode)}
+        </span>
+        ${prizeMarkup}
+        <div class="font-display font-extrabold text-lg text-emerald-400 mt-1">
+          ${winners.map(w => escapeHtml(w.toString())).join(', ')}
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
