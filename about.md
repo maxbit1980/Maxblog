@@ -1,1 +1,0 @@
-- **E-mail:** [maxbit1980@gmail.com](mailto:maxbit1980@gmail.com)
