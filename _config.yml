@@ -16,7 +16,7 @@ linkedin_username: seu-usuario-linkedin
 twitter_username: seu-usuario-twitter
 
 minima:
-  skin: blue
+  skin: dark
   date_format: "%d/%m/%Y"
   social:
     - title: GitHub
