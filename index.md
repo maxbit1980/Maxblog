@@ -1,9 +1,9 @@
 ---
 layout: home
-title: Início
+title: Seja bem-vindo
 ---
 
-# 👋 Olá, eu sou o Cesar
+# 👋 Olá, eu sou o Paulo Cesar
 
 Desenvolvedor apaixonado por **resolver problemas com código**, construir
 projetos úteis e compartilhar o que aprendo no caminho.
@@ -23,8 +23,8 @@ Neste blog você vai encontrar:
 
 | Projeto | Descrição | Stack |
 |---|---|---|
-| **[Projeto 1](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
-| **[Projeto 2](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
+| **[Status da Bateria](https://github.com/maxbit1980/Bateria)** | Relógio + monitor de bateria com promessas bíblicas a cada 10s. | — |
+| **[Secreto](https://github.com/maxbit1980/secreto)** | Gerenciador de Senhas 100% Offline | — |
 | **[Projeto 3](https://github.com/maxbit1980)** | Breve descrição do que ele faz | — |
 
 ---
