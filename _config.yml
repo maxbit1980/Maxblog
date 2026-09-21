@@ -2,7 +2,7 @@ seutitle: Maxblog
 theme: minima 
 tagline: "Código, projetos e aprendizado contínuo"
 description: >-
-  Portfólio técnico e blog pessoal de Cesar. Aqui compartilho projetos,
+  Portfólio técnico e blog pessoal de Paulo Cesar. Aqui compartilho projetos,
   soluções de código, estudos em desenvolvimento de software e anotações
   sobre tecnologia.
 author:
@@ -16,7 +16,7 @@ linkedin_username: seu-usuario-linkedin
 twitter_username: seu-usuario-twitter
 
 minima:
-  skin: dark
+  skin: blue
   date_format: "%d/%m/%Y"
   social:
     - title: GitHub
